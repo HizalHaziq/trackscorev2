@@ -1,0 +1,1832 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrackScore Dashboard</title>
+    <meta name="description" content="TrackScore Managerial Review Dashboard for telematics hardware and software evaluation records." />
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/api/config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  </head>
+  <body>
+    <!-- Site Header: Prominent Solid Black & Vibrant Orange -->
+    <header class="site-header" id="dashboard-header">
+      <div class="header-inner">
+        <a href="/index.html" class="brand-wrapper" id="brand-link">
+          <div class="brand-emblem">TS</div>
+          <div class="brand-details">
+            <h1>TrackScore <span class="brand-badge">Managerial Review</span></h1>
+            <p class="brand-subtitle">Telematics Assessment Registry & Verification History</p>
+          </div>
+        </a>
+
+        <nav class="nav-links" id="dashboard-nav">
+          <a href="/index.html" class="nav-btn" id="nav-back-to-form">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Form
+          </a>
+          <a href="/dashboard.html" class="nav-btn active" id="nav-dashboard">Dashboard</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container" id="dashboard-main">
+      <!-- Title Bar -->
+      <div class="page-title-bar">
+        <div>
+          <h2>Evaluation Records & Historical Compliance</h2>
+          <p class="page-subtitle">Centralized repository of evaluated telematics solutions from MongoDB Atlas.</p>
+        </div>
+        <div>
+          <a href="/index.html" class="btn btn-primary" id="btn-new-assessment">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            New Assessment
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="dashboard-stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-title">Total Evaluations</div>
+          <div class="stat-number orange" id="stat-total-evals">0</div>
+          <div class="stat-meta">Recorded across all vendors</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-title">Average Total Score</div>
+          <div class="stat-number" id="stat-avg-score">0.00</div>
+          <div class="stat-meta">Out of 43.00 maximum marks</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-title">Grade A Certified (5★)</div>
+          <div class="stat-number" id="stat-five-star">0</div>
+          <div class="stat-meta">Score &ge; 4.5 / 5.0 (38.7+ pts)</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-title">Repository Status</div>
+          <div class="stat-number" style="font-size: 20px; font-weight: 700; color: #10B981;" id="stat-db-source">Connected</div>
+          <div class="stat-meta" id="stat-db-sub">MongoDB Driver Active</div>
+        </div>
+      </div>
+
+      <!-- Visible Error Banner (Hardening Pass 2) -->
+      <div class="dashboard-error-banner" id="dashboard-error-banner" style="display: none;" role="alert">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span id="dashboard-error-text" style="font-weight: 600;">Failed to communicate with database server.</span>
+        </div>
+        <div class="banner-actions">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="fetchEvaluations()">Retry Fetch</button>
+          <button type="button" class="alert-close-btn" onclick="dismissDashboardBanner()" aria-label="Dismiss">&times;</button>
+        </div>
+      </div>
+
+      <!-- Controls & Search -->
+      <div class="table-controls" style="flex-wrap: wrap; gap: 12px;">
+        <div class="search-box" style="flex: 1; min-width: 260px;">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="text"
+            id="table-search"
+            class="search-input"
+            placeholder="Search company name, device model, assessor..."
+          />
+        </div>
+
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <select id="status-filter" class="form-control" style="width: auto; padding: 8px 12px; font-size: 13px;" title="Filter by Approval Status" onchange="fetchEvaluations(1, currentLimit)">
+            <option value="all">All Statuses</option>
+            <option value="pending_review">Pending Review</option>
+            <option value="approved">Approved Only</option>
+            <option value="rejected">Rejected Only</option>
+          </select>
+
+          <select id="rating-filter" class="form-control" style="width: auto; padding: 8px 12px; font-size: 13px;" title="Filter by Star Rating">
+            <option value="all">All Ratings</option>
+            <option value="5">5 Stars Only (Grade A)</option>
+            <option value="4">4 Stars Only (Grade B)</option>
+            <option value="3">3 Stars Only (Grade C)</option>
+            <option value="2">2 Stars Only (Grade D)</option>
+            <option value="1">1 Star Only (Grade E)</option>
+          </select>
+
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #475569; padding: 6px 10px; background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; user-select: none;" title="Show soft-deleted archived records">
+            <input type="checkbox" id="include-deleted-toggle" onchange="fetchEvaluations(1, currentLimit)" />
+            <span>Show Archived</span>
+          </label>
+
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-refresh" title="Reload records">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            Refresh
+          </button>
+
+          <!-- Bulk Export (CSV & Combined PDF) Buttons -->
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-export-csv" onclick="exportFilteredCsv()" title="Export current filtered records to standard CSV file">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export Filtered (CSV)
+          </button>
+
+          <button type="button" class="btn btn-outline-orange btn-sm" id="btn-combined-pdf" onclick="exportCombinedPdf()" title="Export all visible evaluations into one consolidated PDF">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            Combined PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Evaluations Data Table -->
+      <div class="table-responsive">
+        <table class="data-table" id="evaluations-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Company Name</th>
+              <th>Device Model</th>
+              <th>Status</th>
+              <th>Package</th>
+              <th>Section A (/33)</th>
+              <th>Section B (/10)</th>
+              <th class="orange-head">Total (/43)</th>
+              <th>Star Rating</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="evaluations-tbody">
+            <tr>
+              <td colspan="10" style="text-align: center; padding: 32px; color: var(--text-muted);">
+                Loading evaluations from database...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Dashboard Pagination Bar (Item 7) -->
+      <div class="pagination-bar" id="pagination-bar" style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding: 14px 18px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: 12px;">
+        <div style="font-size: 13px; color: var(--text-muted); font-weight: 500;" id="pagination-info">
+          Showing 0 of 0 evaluations
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-page-prev" onclick="goToPage(currentPage - 1)">
+            &larr; Previous
+          </button>
+          <span style="font-size: 13px; font-weight: 700; padding: 0 4px;" id="pagination-page-display">Page 1 of 1</span>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-page-next" onclick="goToPage(currentPage + 1)">
+            Next &rarr;
+          </button>
+          <div style="display: flex; align-items: center; gap: 6px; margin-left: 8px;">
+            <label for="select-limit" style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Per page:</label>
+            <select id="select-limit" class="form-control" style="width: auto; padding: 4px 8px; font-size: 13px; border-radius: 4px;" onchange="changeLimit(this.value)">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Full Itemized Breakdown Modal Dialog -->
+    <div class="modal-overlay" id="details-modal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 id="modal-title">Assessment Itemized Breakdown</h3>
+          <button type="button" class="modal-close-btn" id="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="modal-body" id="modal-body">
+          <!-- Dynamic details content injected here -->
+        </div>
+
+        <div class="modal-footer">
+          <div style="font-size: 13px; color: var(--text-muted);" id="modal-footer-meta">
+            Record ID: <span id="modal-record-id">-</span>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <div id="modal-approval-actions" style="display: flex; gap: 6px;"></div>
+            <button type="button" class="btn btn-secondary btn-sm" id="modal-close-action">Close</button>
+            <button type="button" class="btn btn-primary btn-sm" id="modal-download-pdf">Download PDF Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Evaluation Modal Dialog (Item 6) -->
+    <div class="modal-overlay" id="edit-modal">
+      <div class="modal-container" style="max-width: 600px;">
+        <div class="modal-header">
+          <h3>Edit Evaluation Record</h3>
+          <button type="button" class="modal-close-btn" id="edit-modal-close" aria-label="Close modal">&times;</button>
+        </div>
+
+        <form id="edit-form" onsubmit="handleSaveEdit(event)">
+          <div class="modal-body" style="padding: 20px;">
+            <!-- Inline error banner for edit modal -->
+            <div id="edit-form-alert" class="form-alert-container alert-danger" style="display: none; margin-bottom: 14px;" role="alert">
+              <div id="edit-form-alert-msg" class="form-alert-content"></div>
+              <button type="button" class="alert-close-btn" onclick="document.getElementById('edit-form-alert').style.display='none'" aria-label="Dismiss">&times;</button>
+            </div>
+
+            <input type="hidden" id="edit-record-id" />
+            <div style="display: grid; gap: 14px;">
+              <div>
+                <label for="edit-companyName" style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Company Name</label>
+                <input type="text" id="edit-companyName" class="form-control" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px;" />
+              </div>
+
+              <div>
+                <label for="edit-deviceModel" style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Device Model</label>
+                <input type="text" id="edit-deviceModel" class="form-control" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px;" />
+              </div>
+
+              <div>
+                <label for="edit-packageName" style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Package Name</label>
+                <input type="text" id="edit-packageName" class="form-control" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px;" />
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                  <label for="edit-assessorName" style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Assessor Name</label>
+                  <input type="text" id="edit-assessorName" class="form-control" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px;" />
+                </div>
+                <div>
+                  <label for="edit-assessmentDate" style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Assessment Date</label>
+                  <input type="date" id="edit-assessmentDate" class="form-control" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px;" />
+                </div>
+              </div>
+
+              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px; border-radius: 6px; font-size: 12px; color: #64748B;">
+                <strong>Note:</strong> Total Score and Star Rating are preserved and protected by server integrity recomputation. To change criterion points, please generate and submit a new evaluation.
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary btn-sm" id="edit-modal-cancel">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm" id="btn-save-edit">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Archive (Soft-Delete) Confirmation Modal Dialog -->
+    <div class="modal-overlay" id="archive-modal" aria-hidden="true">
+      <div class="modal-container" style="max-width: 480px;">
+        <div class="modal-header" style="border-bottom: 2px solid #EF4444;">
+          <h3 style="color: #B91C1C; display: flex; align-items: center; gap: 8px; font-size: 17px; margin: 0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="21 8 21 21 3 21 3 8"></polyline>
+              <rect x="1" y="3" width="22" height="5"></rect>
+              <line x1="10" y1="12" x2="14" y2="12"></line>
+            </svg>
+            Archive Evaluation Record
+          </h3>
+          <button type="button" class="modal-close-btn" id="archive-modal-close" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="modal-body" style="padding: 20px;">
+          <p style="margin-bottom: 12px; font-size: 14px; color: #1E293B;">
+            Are you sure you want to archive (soft-delete) this evaluation record?
+          </p>
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 14px; margin-bottom: 14px;">
+            <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;">Company</div>
+            <div id="archive-modal-company" style="font-size: 15px; font-weight: 700; color: #0F172A; margin-bottom: 8px;"></div>
+            <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;">Device Model</div>
+            <div id="archive-modal-device" style="font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 8px;"></div>
+            <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;">Record ID</div>
+            <div id="archive-modal-id" style="font-family: monospace; font-size: 12px; color: #64748B;"></div>
+          </div>
+          <p style="font-size: 12px; color: #64748B; line-height: 1.5; margin: 0;">
+            Note: The record will be preserved in the database with regulatory timestamping for compliance and audit trail purposes, but hidden from the active assessment list.
+          </p>
+          <div id="archive-modal-alert" class="form-alert-container alert-danger" style="display: none; margin-top: 14px;" role="alert">
+            <div id="archive-modal-alert-msg" class="form-alert-content"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn btn-secondary btn-sm" id="archive-modal-cancel">Cancel</button>
+          <button type="button" class="btn btn-sm" id="btn-confirm-archive" style="background: #EF4444; color: #FFFFFF; border: none; font-weight: 700; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            Archive Record
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rejection Reason Modal Dialog (Managerial Workflow - Requirement 2) -->
+    <div class="modal-overlay" id="rejection-reason-modal" aria-hidden="true">
+      <div class="modal-container" style="max-width: 520px;">
+        <div class="modal-header" style="border-bottom: 2px solid #EF4444;">
+          <h3 style="color: #B91C1C; display: flex; align-items: center; gap: 8px; font-size: 17px; margin: 0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+            Reject Evaluation Submission
+          </h3>
+          <button type="button" class="modal-close-btn" id="reject-modal-close" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="modal-body" style="padding: 20px;">
+          <p style="margin-top: 0; font-size: 13.5px; color: #334155; line-height: 1.4;">
+            Specify the regulatory or technical non-compliance reason for rejecting this evaluation. This feedback will be recorded in the audit trail and surfaced directly to the assessor upon lookup.
+          </p>
+
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 12px; margin-bottom: 14px; font-size: 13px;">
+            <div><strong>Company:</strong> <span id="reject-modal-company">-</span></div>
+            <div style="margin-top: 4px;"><strong>Device Model:</strong> <span id="reject-modal-device">-</span></div>
+            <div style="margin-top: 4px;"><strong>Assessor:</strong> <span id="reject-modal-assessor">-</span></div>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <label for="reject-reason-input" style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">
+              Rejection Reason / Required Remediation
+            </label>
+            <textarea id="reject-reason-input" class="form-control" rows="4" placeholder="e.g., Section A item #4 missing official certificate documentation, or GPS reporting rate is non-compliant with MIROS standard." style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 13px;"></textarea>
+          </div>
+
+          <div id="reject-modal-alert" class="form-alert-container alert-danger" style="display: none;" role="alert">
+            <div id="reject-modal-alert-msg" class="form-alert-content"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn btn-secondary btn-sm" id="reject-modal-cancel">Cancel</button>
+          <button type="button" class="btn btn-sm" id="btn-confirm-reject" style="background: #EF4444; color: #FFFFFF; border: none; font-weight: 700; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            Confirm Rejection
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p><strong>TrackScore • Managerial Review Dashboard</strong></p>
+      <p>Official MIROS Telematics Standardization Verification Framework</p>
+    </footer>
+
+    <!-- Dashboard Logic Script -->
+    <script>
+      // Role-Based API Key: Manager API Key required for managerial actions
+      function getManagerApiKey() {
+        return window.MANAGER_API_KEY || window.TRACKSCORE_API_KEY || "trackscore-manager-key-2026";
+      }
+      const MANAGER_API_KEY = getManagerApiKey();
+      const TRACKSCORE_API_KEY = MANAGER_API_KEY;
+
+      let evaluationsList = [];
+      let activeEvaluation = null;
+      let currentPage = 1;
+      let currentLimit = 10;
+      let totalPages = 1;
+      let totalCount = 0;
+
+      function dismissDashboardBanner() {
+        const banner = document.getElementById("dashboard-error-banner");
+        if (banner) banner.style.display = "none";
+      }
+
+      function clearFilters() {
+        const searchInput = document.getElementById("table-search");
+        const ratingSelect = document.getElementById("rating-filter");
+        const statusSelect = document.getElementById("status-filter");
+        if (searchInput) searchInput.value = "";
+        if (ratingSelect) ratingSelect.value = "all";
+        if (statusSelect) statusSelect.value = "all";
+        fetchEvaluations(1, currentLimit);
+      }
+
+      async function fetchEvaluations(page = currentPage, limit = currentLimit) {
+        currentPage = page;
+        currentLimit = limit;
+
+        const tbody = document.getElementById("evaluations-tbody");
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" style="text-align: center; padding: 48px 24px;">
+              <div class="spinner-inline" style="width: 28px; height: 28px; border-width: 3px;"></div>
+              <div style="margin-top: 12px; font-weight: 600; color: var(--text-muted);">
+                Loading evaluations from database...
+              </div>
+            </td>
+          </tr>
+        `;
+
+        const includeDeleted = document.getElementById("include-deleted-toggle")?.checked ? "true" : "false";
+        const statusFilter = document.getElementById("status-filter")?.value || "all";
+        const statusQuery = statusFilter && statusFilter !== "all" ? `&status=${encodeURIComponent(statusFilter)}` : "";
+
+        try {
+          // Include ?page=&limit=&includeDeleted=&status= and Manager x-api-key header
+          const response = await fetch(
+            `/.netlify/functions/get-evaluations?page=${currentPage}&limit=${currentLimit}&includeDeleted=${includeDeleted}${statusQuery}`,
+            {
+              method: 'GET',
+              headers: {
+                'x-api-key': getManagerApiKey(),
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          if (!response.ok) {
+            const errorResult = await response.json().catch(() => ({}));
+            throw new Error(errorResult.error || `Server returned status ${response.status}`);
+          }
+
+          const result = await response.json();
+
+          if (result.success && Array.isArray(result.data)) {
+            evaluationsList = result.data;
+            totalCount = typeof result.total === 'number' ? result.total : result.data.length;
+            totalPages = typeof result.totalPages === 'number' ? result.totalPages : 1;
+            currentPage = typeof result.page === 'number' ? result.page : 1;
+
+            dismissDashboardBanner();
+            updateDashboardMetrics(evaluationsList, result.isMongoAtlas, totalCount, result.atlasDiagnostic);
+            renderEvaluationsTable(evaluationsList);
+            updatePaginationUI();
+          } else {
+            throw new Error(result.error || "Failed to load records");
+          }
+        } catch (error) {
+          console.error("Dashboard fetch error:", error);
+
+          // Show prominent error banner
+          const banner = document.getElementById("dashboard-error-banner");
+          const bannerText = document.getElementById("dashboard-error-text");
+          if (banner && bannerText) {
+            bannerText.textContent = `Error loading evaluations: ${error.message}`;
+            banner.style.display = "flex";
+          }
+
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="10">
+                <div class="empty-state-box">
+                  <div class="empty-state-icon" style="background: #FEE2E2; color: #EF4444;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="8" x2="12" y2="12"></line>
+                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                  </div>
+                  <div class="empty-state-title">Unable to Load Records</div>
+                  <div class="empty-state-subtitle">${escapeHtml(error.message)}</div>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="fetchEvaluations(${currentPage}, ${currentLimit})">
+                    Retry Request
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }
+      }
+
+      function updateDashboardMetrics(records, isMongoAtlas, totalRecordsCount, atlasDiagnostic) {
+        document.getElementById("stat-total-evals").textContent = totalRecordsCount !== undefined ? totalRecordsCount : records.length;
+
+        if (records.length > 0) {
+          const sumTotal = records.reduce((acc, curr) => acc + (curr.totalScore || 0), 0);
+          const avg = sumTotal / records.length;
+          document.getElementById("stat-avg-score").textContent = avg.toFixed(2);
+
+          const fiveStars = records.filter(r => (r.starsCount === 5 || r.starRating >= 4.5)).length;
+          document.getElementById("stat-five-star").textContent = fiveStars;
+        } else {
+          document.getElementById("stat-avg-score").textContent = "0.00";
+          document.getElementById("stat-five-star").textContent = "0";
+        }
+
+        const dbSourceEl = document.getElementById("stat-db-source");
+        const dbSubEl = document.getElementById("stat-db-sub");
+        if (dbSourceEl && dbSubEl) {
+          if (isMongoAtlas) {
+            dbSourceEl.textContent = "MongoDB Atlas";
+            dbSourceEl.style.color = "#10B981";
+            dbSubEl.textContent = "Live Cloud Cluster Connected";
+          } else if (atlasDiagnostic && atlasDiagnostic.isIpBlocked) {
+            dbSourceEl.textContent = "Local Store";
+            dbSourceEl.style.color = "#F58220";
+            dbSubEl.textContent = "Atlas IP Blocked • Whitelist 0.0.0.0/0 in Atlas";
+            dbSubEl.title = "In cloud.mongodb.com -> Network Access -> Add IP 0.0.0.0/0";
+          } else {
+            dbSourceEl.textContent = "Local Store";
+            dbSourceEl.style.color = "#F58220";
+            dbSubEl.textContent = "Operating via persistent local storage";
+          }
+        }
+      }
+
+      function updatePaginationUI() {
+        const infoEl = document.getElementById("pagination-info");
+        const displayEl = document.getElementById("pagination-page-display");
+        const prevBtn = document.getElementById("btn-page-prev");
+        const nextBtn = document.getElementById("btn-page-next");
+
+        if (!infoEl || !displayEl) return;
+
+        const startItem = totalCount === 0 ? 0 : (currentPage - 1) * currentLimit + 1;
+        const endItem = Math.min(currentPage * currentLimit, totalCount);
+
+        infoEl.textContent = `Showing ${startItem}-${endItem} of ${totalCount} evaluations`;
+        displayEl.textContent = `Page ${currentPage} of ${Math.max(1, totalPages)}`;
+
+        if (prevBtn) prevBtn.disabled = currentPage <= 1;
+        if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+      }
+
+      function goToPage(targetPage) {
+        if (targetPage < 1 || targetPage > totalPages) return;
+        fetchEvaluations(targetPage, currentLimit);
+      }
+
+      function changeLimit(newLimit) {
+        currentLimit = parseInt(newLimit, 10) || 10;
+        currentPage = 1;
+        fetchEvaluations(1, currentLimit);
+      }
+
+      function renderStatusBadge(status) {
+        const norm = (status || 'pending_review').toLowerCase();
+        if (norm === 'approved') {
+          return `<span class="badge-status badge-approved" style="display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; white-space: nowrap;"><span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#059669;"></span>Approved</span>`;
+        } else if (norm === 'rejected') {
+          return `<span class="badge-status badge-rejected" style="display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; white-space: nowrap;"><span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#DC2626;"></span>Rejected</span>`;
+        } else {
+          return `<span class="badge-status badge-pending" style="display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; white-space: nowrap;"><span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#D97706;"></span>Pending</span>`;
+        }
+      }
+
+      function renderEvaluationsTable(records) {
+        const tbody = document.getElementById("evaluations-tbody");
+        const searchTerm = (document.getElementById("table-search")?.value || "").toLowerCase().trim();
+        const ratingFilter = document.getElementById("rating-filter")?.value || "all";
+        const statusFilter = (document.getElementById("status-filter")?.value || "all").toLowerCase().trim();
+
+        if (records.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="10">
+                <div class="empty-state-box">
+                  <div class="empty-state-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                  </div>
+                  <div class="empty-state-title">No Evaluations Recorded Yet</div>
+                  <div class="empty-state-subtitle">There are no telematics evaluation records stored in the repository. Complete a new assessment to populate this dashboard.</div>
+                  <a href="/index.html" class="btn btn-primary btn-sm">Start New Assessment</a>
+                </div>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        const filtered = records.filter(r => {
+          const matchesSearch =
+            (r.companyName || "").toLowerCase().includes(searchTerm) ||
+            (r.deviceModel || "").toLowerCase().includes(searchTerm) ||
+            (r.assessorName || "").toLowerCase().includes(searchTerm) ||
+            (r.packageName || "").toLowerCase().includes(searchTerm);
+
+          const matchesRating =
+            ratingFilter === "all" ||
+            String(r.starsCount) === ratingFilter;
+
+          const recStatus = (r.status || "pending_review").toLowerCase();
+          const matchesStatus =
+            statusFilter === "all" ||
+            recStatus === statusFilter;
+
+          return matchesSearch && matchesRating && matchesStatus;
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="10">
+                <div class="empty-state-box">
+                  <div class="empty-state-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                  </div>
+                  <div class="empty-state-title">No Matching Evaluations Found</div>
+                  <div class="empty-state-subtitle">No records matched your search query or selected filters. Try adjusting your keywords or resetting filters.</div>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="clearFilters()">Clear Filters</button>
+                </div>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(evalRecord => {
+          const dateStr = evalRecord.createdAt
+            ? new Date(evalRecord.createdAt).toLocaleDateString("en-MY", { year: "numeric", month: "short", day: "numeric" })
+            : (evalRecord.assessmentDate || "N/A");
+
+          const starsCount = evalRecord.starsCount || 1;
+          let starsStr = "";
+          for (let i = 1; i <= 5; i++) {
+            starsStr += i <= starsCount ? "★" : "☆";
+          }
+
+          const recordId = evalRecord._id || evalRecord.id;
+          const isDeleted = Boolean(evalRecord.deletedAt);
+          const isApproved = (evalRecord.status || "").toLowerCase() === "approved";
+
+          return `
+            <tr style="${isDeleted ? 'opacity: 0.75; background-color: #FEF2F2;' : ''}">
+              <td style="white-space: nowrap; color: var(--text-muted); font-size: 13px;">${dateStr}</td>
+              <td style="font-weight: 700;">
+                ${escapeHtml(evalRecord.companyName)}
+                ${isDeleted ? '<span style="background: #FEE2E2; color: #991B1B; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; margin-left: 6px;">ARCHIVED</span>' : ''}
+              </td>
+              <td>${escapeHtml(evalRecord.deviceModel)}</td>
+              <td style="white-space: nowrap;">${renderStatusBadge(evalRecord.status)}</td>
+              <td style="color: var(--text-muted); font-size: 13px;">${escapeHtml(evalRecord.packageName || "-")}</td>
+              <td>${(evalRecord.sectionAScore || 0).toFixed(2)}</td>
+              <td>${(evalRecord.sectionBScore || 0).toFixed(2)}</td>
+              <td style="font-weight: 800; color: var(--primary-orange);">${(evalRecord.totalScore || 0).toFixed(2)}</td>
+              <td>
+                <span class="rating-badge rating-${starsCount}">
+                  ${starsStr} (${(evalRecord.starRating || 0).toFixed(2)})
+                </span>
+              </td>
+              <td style="text-align: right; white-space: nowrap;">
+                <div style="display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    onclick="openEvaluationDetails('${recordId}')"
+                    title="View itemized breakdown, status history, and audit trail"
+                  >
+                    View
+                  </button>
+                  ${isDeleted ? `
+                    <span style="font-size: 11px; color: #94A3B8; font-style: italic; padding: 0 4px;">Archived</span>
+                  ` : `
+                    ${isApproved ? `
+                      <button
+                        type="button"
+                        class="btn btn-secondary btn-sm"
+                        style="opacity: 0.5; cursor: not-allowed;"
+                        onclick="showToast('Approved records are finalized and immutable under MIROS standards.', true)"
+                        title="Approved records are immutable and cannot be edited"
+                      >
+                        Edit
+                      </button>
+                    ` : `
+                      <button
+                        type="button"
+                        class="btn btn-secondary btn-sm"
+                        onclick="openEditModal('${recordId}')"
+                        title="Edit evaluation metadata"
+                      >
+                        Edit
+                      </button>
+                    `}
+                    <button
+                      type="button"
+                      class="btn btn-sm"
+                      style="background: #EF4444; color: #FFFFFF; border: none; padding: 6px 10px; font-weight: 600; border-radius: 4px; cursor: pointer;"
+                      onclick="openArchiveModal('${recordId}')"
+                      title="Archive / Soft-Delete record"
+                    >
+                      Archive
+                    </button>
+                  `}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      // ==========================================================================
+      // Edit Record Modal Handlers (Item 6 & Audit Trail)
+      // ==========================================================================
+      function openEditModal(recordId) {
+        const record = evaluationsList.find(r => (r._id === recordId || r.id === recordId));
+        if (!record) return;
+
+        // Immutability enforcement (Requirement 3)
+        if ((record.status || '').toLowerCase() === 'approved') {
+          showToast('Approved evaluation records are finalized and immutable under MIROS standards.', true);
+          return;
+        }
+
+        // Reset inline error alert
+        const alertBox = document.getElementById("edit-form-alert");
+        if (alertBox) alertBox.style.display = "none";
+
+        document.getElementById("edit-record-id").value = record._id || record.id;
+        document.getElementById("edit-companyName").value = record.companyName || "";
+        document.getElementById("edit-deviceModel").value = record.deviceModel || "";
+        document.getElementById("edit-packageName").value = record.packageName || "";
+        document.getElementById("edit-assessorName").value = record.assessorName || "";
+        document.getElementById("edit-assessmentDate").value = record.assessmentDate || (record.createdAt ? record.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]);
+
+        document.getElementById("edit-modal").classList.add("active");
+      }
+
+      function closeEditModal() {
+        document.getElementById("edit-modal").classList.remove("active");
+      }
+
+      async function handleSaveEdit(e) {
+        e.preventDefault();
+        const recordId = document.getElementById("edit-record-id").value;
+        const saveBtn = document.getElementById("btn-save-edit");
+        const alertBox = document.getElementById("edit-form-alert");
+        const alertMsg = document.getElementById("edit-form-alert-msg");
+
+        if (alertBox) alertBox.style.display = "none";
+
+        const updateData = {
+          companyName: document.getElementById("edit-companyName").value.trim(),
+          deviceModel: document.getElementById("edit-deviceModel").value.trim(),
+          packageName: document.getElementById("edit-packageName").value.trim(),
+          assessorName: document.getElementById("edit-assessorName").value.trim(),
+          assessmentDate: document.getElementById("edit-assessmentDate").value
+        };
+
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Saving...";
+        }
+
+        try {
+          const response = await fetch(`/.netlify/functions/update-evaluation?id=${encodeURIComponent(recordId)}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": getManagerApiKey()
+            },
+            body: JSON.stringify(updateData)
+          });
+
+          const result = await response.json();
+
+          if (response.ok && result.success) {
+            closeEditModal();
+            showToast("Evaluation metadata updated successfully.");
+            fetchEvaluations(currentPage, currentLimit);
+          } else {
+            throw new Error(result.error || `Update failed (Status ${response.status})`);
+          }
+        } catch (error) {
+          console.error("Edit evaluation error:", error);
+          if (alertBox && alertMsg) {
+            alertMsg.textContent = error.message;
+            alertBox.style.display = "flex";
+          } else {
+            showToast("Error updating evaluation: " + error.message, true);
+          }
+        } finally {
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Save Changes";
+          }
+        }
+      }
+
+      // ==========================================================================
+      // Soft-Delete / Archive In-Page Modal Handlers (Accessible & Iframe-Safe)
+      // ==========================================================================
+      let pendingArchiveRecordId = null;
+
+      function openArchiveModal(recordId) {
+        pendingArchiveRecordId = recordId;
+        const record = evaluationsList.find(r => (r._id === recordId || r.id === recordId));
+
+        const alertBox = document.getElementById("archive-modal-alert");
+        if (alertBox) alertBox.style.display = "none";
+
+        const compEl = document.getElementById("archive-modal-company");
+        const devEl = document.getElementById("archive-modal-device");
+        const idEl = document.getElementById("archive-modal-id");
+
+        if (compEl) compEl.textContent = record ? (record.companyName || "N/A") : "N/A";
+        if (devEl) devEl.textContent = record ? (record.deviceModel || "N/A") : "N/A";
+        if (idEl) idEl.textContent = recordId;
+
+        const modal = document.getElementById("archive-modal");
+        if (modal) modal.classList.add("active");
+      }
+
+      function closeArchiveModal() {
+        const modal = document.getElementById("archive-modal");
+        if (modal) modal.classList.remove("active");
+        pendingArchiveRecordId = null;
+      }
+
+      async function executeArchive() {
+        if (!pendingArchiveRecordId) return;
+        const recordId = pendingArchiveRecordId;
+        const archiveBtn = document.getElementById("btn-confirm-archive");
+        const alertBox = document.getElementById("archive-modal-alert");
+        const alertMsg = document.getElementById("archive-modal-alert-msg");
+
+        if (alertBox) alertBox.style.display = "none";
+
+        if (archiveBtn) {
+          archiveBtn.disabled = true;
+          archiveBtn.textContent = "Archiving...";
+        }
+
+        try {
+          const response = await fetch(`/.netlify/functions/delete-evaluation?id=${encodeURIComponent(recordId)}`, {
+            method: "DELETE",
+            headers: {
+              "x-api-key": getManagerApiKey(),
+              "Content-Type": "application/json"
+            }
+          });
+
+          const result = await response.json().catch(() => ({}));
+
+          if (response.ok && result.success) {
+            closeArchiveModal();
+            showToast("Evaluation record archived successfully.");
+            fetchEvaluations(currentPage, currentLimit);
+          } else {
+            throw new Error(result.error || `Archive failed with status ${response.status}`);
+          }
+        } catch (error) {
+          console.error("Delete error:", error);
+          if (alertBox && alertMsg) {
+            alertMsg.textContent = error.message;
+            alertBox.style.display = "flex";
+          } else {
+            showToast("Archive Error: " + error.message, true);
+          }
+        } finally {
+          if (archiveBtn) {
+            archiveBtn.disabled = false;
+            archiveBtn.textContent = "Archive Record";
+          }
+        }
+      }
+
+      // Backward-compatibility alias
+      function confirmDeleteEvaluation(recordId) {
+        openArchiveModal(recordId);
+      }
+
+      // ==========================================================================
+      // Full Itemized Breakdown & Audit Trail Timeline
+      // ==========================================================================
+      function openEvaluationDetails(evalId) {
+        const record = evaluationsList.find(r => (r._id === evalId || r.id === evalId));
+        if (!record) return;
+
+        activeEvaluation = record;
+
+        document.getElementById("modal-record-id").textContent = record._id || record.id || "N/A";
+        document.getElementById("modal-title").textContent = `${record.companyName} • ${record.deviceModel}`;
+
+        const starsCount = record.starsCount || 1;
+        let starDisplay = "";
+        for (let s = 1; s <= 5; s++) {
+          starDisplay += s <= starsCount ? "★" : "☆";
+        }
+
+        const breakdown = Array.isArray(record.breakdown) ? record.breakdown : [];
+
+        let breakdownHtml = "";
+        if (breakdown.length === 0) {
+          breakdownHtml = `<tr><td colspan="4" style="text-align: center; padding: 16px; color: #999;">No detailed breakdown rows recorded.</td></tr>`;
+        } else {
+          breakdownHtml = breakdown.map((item, idx) => `
+            <tr style="background-color: ${idx % 2 === 0 ? '#FFFFFF' : '#F9F9F9'};">
+              <td style="padding: 8px 12px; border-bottom: 1px solid #E2E8F0; text-align: center; font-size: 12px; color: #666;">${idx + 1}</td>
+              <td style="padding: 8px 12px; border-bottom: 1px solid #E2E8F0; font-size: 13px; font-weight: 600;">
+                <span style="display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; margin-right: 6px; ${item.section === 'A' ? 'background: #FFF7ED; color: #C2410C;' : 'background: #EFF6FF; color: #1D4ED8;'}">
+                  SEC ${item.section || 'A'}
+                </span>
+                ${escapeHtml(item.name)}
+              </td>
+              <td style="padding: 8px 12px; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: ${item.points > 0 ? '#C2410C' : '#64748B'}; font-weight: ${item.points > 0 ? '700' : '400'};">
+                ${escapeHtml(item.selectedOption)}
+              </td>
+              <td style="padding: 8px 12px; border-bottom: 1px solid #E2E8F0; font-size: 13px; font-weight: 700; text-align: right; color: ${item.points > 0 ? '#0F172A' : '#94A3B8'};">
+                ${Number(item.points || 0).toFixed(2)} pts
+              </td>
+            </tr>
+          `).join("");
+        }
+
+        const dateFormatted = record.createdAt ? new Date(record.createdAt).toLocaleString() : "-";
+        const historyList = Array.isArray(record.evaluationHistory) ? record.evaluationHistory : [];
+        const status = (record.status || 'pending_review').toLowerCase();
+        const recordId = record._id || record.id;
+
+        // Approval status banner
+        let statusBannerHtml = '';
+        if (record.deletedAt) {
+          statusBannerHtml = `
+            <div style="background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; color: #991B1B; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <div>
+                <strong>Archived Record (Soft-Deleted):</strong> This assessment was archived by <strong>${escapeHtml(record.deletedBy || 'Manager')}</strong> on ${new Date(record.deletedAt).toLocaleString()}. Retained for audit and regulatory compliance.
+              </div>
+            </div>
+          `;
+        } else if (status === 'approved') {
+          const approvedDate = record.approvedAt ? new Date(record.approvedAt).toLocaleString() : (record.statusChangedAt ? new Date(record.statusChangedAt).toLocaleString() : '-');
+          statusBannerHtml = `
+            <div style="background: #ECFDF5; border: 1px solid #6EE7B7; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; color: #065F46; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <div style="flex: 1;">
+                <div style="font-weight: 800; font-size: 14px;">Record Approved & Locked (MIROS Compliance)</div>
+                <div style="font-size: 12px; margin-top: 2px; color: #047857;">
+                  Verified and approved by <strong>${escapeHtml(record.approvedBy || record.reviewedBy || 'Manager')}</strong> on ${approvedDate}. Edits are permanently restricted to ensure regulatory compliance.
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (status === 'rejected') {
+          const rejectedDate = record.rejectedAt ? new Date(record.rejectedAt).toLocaleString() : (record.statusChangedAt ? new Date(record.statusChangedAt).toLocaleString() : '-');
+          statusBannerHtml = `
+            <div style="background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; color: #991B1B; font-size: 13px; display: flex; align-items: flex-start; gap: 10px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top: 2px; flex-shrink: 0;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+              <div style="flex: 1;">
+                <div style="font-weight: 800; font-size: 14px;">Evaluation Returned / Rejected for Remediation</div>
+                <div style="font-size: 12px; margin-top: 2px; color: #B91C1C;">
+                  Reviewed by <strong>${escapeHtml(record.rejectedBy || record.reviewedBy || 'Manager')}</strong> on ${rejectedDate}. Assessor can look up and remediate this submission.
+                </div>
+                ${record.rejectionReason ? `
+                  <div style="margin-top: 8px; background: #FFFFFF; border: 1px solid #FECACA; border-radius: 4px; padding: 8px 12px; font-size: 12px; color: #7F1D1D;">
+                    <strong>Required Remediation Reason:</strong> ${escapeHtml(record.rejectionReason)}
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `;
+        } else {
+          statusBannerHtml = `
+            <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; color: #92400E; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <div style="flex: 1;">
+                <div style="font-weight: 800; font-size: 13.5px;">Pending Manager Review</div>
+                <div style="font-size: 12px; margin-top: 2px; color: #B45309;">
+                  This evaluation is awaiting formal managerial sign-off. Review scores and itemized criteria below to approve or request assessor revisions.
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        document.getElementById("modal-body").innerHTML = `
+          ${statusBannerHtml}
+
+          <!-- Metadata Grid -->
+          <div style="background: #F8F9FA; border: 1px solid #E2E8F0; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; font-size: 13px;">
+              <div>
+                <span style="font-weight: 700; color: #64748B; font-size: 11px; text-transform: uppercase;">Company:</span>
+                <div style="font-weight: 700; color: #1A1A1A; font-size: 14px;">${escapeHtml(record.companyName)}</div>
+              </div>
+              <div>
+                <span style="font-weight: 700; color: #64748B; font-size: 11px; text-transform: uppercase;">Device Model:</span>
+                <div style="font-weight: 700; color: #1A1A1A; font-size: 14px;">${escapeHtml(record.deviceModel)}</div>
+              </div>
+              <div>
+                <span style="font-weight: 700; color: #64748B; font-size: 11px; text-transform: uppercase;">Package:</span>
+                <div style="color: #1A1A1A;">${escapeHtml(record.packageName || "Standard")}</div>
+              </div>
+              <div>
+                <span style="font-weight: 700; color: #64748B; font-size: 11px; text-transform: uppercase;">Assessor ID / Name:</span>
+                <div style="color: #1A1A1A; font-weight: 600;">${escapeHtml(record.assessorName)}</div>
+              </div>
+              <div>
+                <span style="font-weight: 700; color: #64748B; font-size: 11px; text-transform: uppercase;">Assessment Date:</span>
+                <div style="color: #1A1A1A;">${dateFormatted}</div>
+              </div>
+              <div>
+                <span style="font-weight: 700; color: #64748B; font-size: 11px; text-transform: uppercase;">Rubric Version:</span>
+                <div style="color: #1A1A1A; font-weight: 700;">v${escapeHtml(record.rubricVersion || '1.0')}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Score Summary Box -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 24px;">
+            <div style="border: 1px solid #E2E8F0; border-radius: 6px; padding: 12px; text-align: center; background: #FFFFFF;">
+              <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;">Section A Score</div>
+              <div style="font-size: 22px; font-weight: 800; color: #1A1A1A; margin-top: 4px;">${(record.sectionAScore || 0).toFixed(2)} <span style="font-size: 12px; color: #94A3B8;">/ 33</span></div>
+            </div>
+
+            <div style="border: 1px solid #E2E8F0; border-radius: 6px; padding: 12px; text-align: center; background: #FFFFFF;">
+              <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;">Section B Score</div>
+              <div style="font-size: 22px; font-weight: 800; color: #1A1A1A; margin-top: 4px;">${(record.sectionBScore || 0).toFixed(2)} <span style="font-size: 12px; color: #94A3B8;">/ 10</span></div>
+            </div>
+
+            <div style="border: 2px solid #F58220; border-radius: 6px; padding: 12px; text-align: center; background: #FFF7ED;">
+              <div style="font-size: 11px; font-weight: 800; color: #C2410C; text-transform: uppercase;">Total Score</div>
+              <div style="font-size: 24px; font-weight: 900; color: #F58220; margin-top: 4px;">${(record.totalScore || 0).toFixed(2)} <span style="font-size: 13px; color: #C2410C;">/ 43</span></div>
+            </div>
+
+            <div style="border: 1px solid #E2E8F0; border-radius: 6px; padding: 12px; text-align: center; background: #FFFFFF;">
+              <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;">Certification Grade</div>
+              <div style="font-size: 18px; font-weight: 800; color: #B45309; margin-top: 4px;">${starDisplay}</div>
+              <div style="font-size: 11px; color: #64748B; margin-top: 2px;">${escapeHtml(record.ratingLabel || '')}</div>
+            </div>
+          </div>
+
+          <!-- Itemized Breakdown Table -->
+          <div>
+            <h4 style="font-size: 15px; font-weight: 800; color: #1A1A1A; margin-bottom: 10px; border-bottom: 2px solid #F58220; padding-bottom: 6px;">
+              Itemized Evaluation Breakdown (${breakdown.length} Evaluated Items)
+            </h4>
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #E2E8F0;">
+              <thead>
+                <tr style="background: #1A1A1A; color: #FFFFFF;">
+                  <th style="padding: 8px 12px; font-size: 11px; width: 6%; text-align: center;">#</th>
+                  <th style="padding: 8px 12px; font-size: 11px; width: 48%; text-align: left;">Criterion</th>
+                  <th style="padding: 8px 12px; font-size: 11px; width: 28%; text-align: left;">Selected Option</th>
+                  <th style="padding: 8px 12px; font-size: 11px; width: 18%; text-align: right;">Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${breakdownHtml}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Audit Trail & Revision History Section (Pass 2) -->
+          <div style="margin-top: 24px; border: 1px solid #E2E8F0; border-radius: 6px; padding: 16px; background: #F8FAFC;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h4 style="font-size: 14px; font-weight: 800; color: #1E293B; margin: 0; display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F58220" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Audit Trail & Revision History
+              </h4>
+              <span style="font-size: 11px; font-weight: 600; color: #64748B; background: #E2E8F0; padding: 2px 8px; border-radius: 10px;">
+                ${historyList.length} ${historyList.length === 1 ? 'Revision' : 'Revisions'}
+              </span>
+            </div>
+
+            ${historyList.length === 0 ? `
+              <div style="font-size: 12px; color: #64748B; font-style: italic; padding: 8px 0;">
+                No revisions have been made to this evaluation record since its initial creation.
+              </div>
+            ` : `
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${historyList.slice().reverse().map((rev, revIdx) => {
+                  const revNum = historyList.length - revIdx;
+                  const revDate = rev.editedAt ? new Date(rev.editedAt).toLocaleString() : 'N/A';
+                  const prev = rev.previousScores || {};
+                  return `
+                    <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 4px; padding: 10px 12px; font-size: 12px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-weight: 700; color: #1E293B;">
+                          Revision #${revNum} &bull; Modified by <span style="color: #F58220;">${escapeHtml(rev.editedBy || 'Manager')}</span>
+                        </span>
+                        <span style="color: #64748B; font-size: 11px;">${revDate}</span>
+                      </div>
+                      <div style="font-size: 11.5px; color: #475569;">
+                        <strong>Previous Scores:</strong> Sec A: ${(prev.sectionAScore || 0).toFixed(2)} | Sec B: ${(prev.sectionBScore || 0).toFixed(2)} | Total: ${(prev.totalScore || 0).toFixed(2)} (${(prev.starRating || 0).toFixed(2)}★)
+                      </div>
+                      ${rev.changes ? `
+                        <div style="margin-top: 4px; font-size: 11px; color: #64748B; background: #F1F5F9; padding: 4px 8px; border-radius: 3px;">
+                          Modified Fields: <code>${Object.keys(rev.changes).join(', ')}</code>
+                        </div>
+                      ` : ''}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            `}
+          </div>
+        `;
+
+        // Render approval action buttons in modal footer
+        const approvalActionsEl = document.getElementById("modal-approval-actions");
+        if (approvalActionsEl) {
+          if (record.deletedAt) {
+            approvalActionsEl.innerHTML = `<span style="font-size: 11px; color: #94A3B8; font-style: italic; align-self: center;">Archived Record</span>`;
+          } else if (status === 'approved') {
+            approvalActionsEl.innerHTML = `
+              <span style="background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; font-size: 11.5px; font-weight: 700; padding: 5px 12px; border-radius: 4px; display: inline-flex; align-items: center; gap: 5px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Approved
+              </span>
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm"
+                onclick="openRejectionModal('${recordId}')"
+                title="Revoke approval and return for assessor remediation"
+              >
+                Reject / Revoke
+              </button>
+            `;
+          } else if (status === 'rejected') {
+            approvalActionsEl.innerHTML = `
+              <span style="background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; font-size: 11.5px; font-weight: 700; padding: 5px 12px; border-radius: 4px; display: inline-flex; align-items: center; gap: 5px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                Rejected
+              </span>
+              <button
+                type="button"
+                class="btn btn-sm"
+                id="btn-modal-approve"
+                style="background: #10B981; color: #FFFFFF; border: none; font-weight: 700; padding: 6px 14px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;"
+                onclick="handleApproveEvaluation('${recordId}')"
+                title="Approve evaluation record"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Approve Record
+              </button>
+            `;
+          } else {
+            // Pending review
+            approvalActionsEl.innerHTML = `
+              <button
+                type="button"
+                class="btn btn-sm"
+                id="btn-modal-approve"
+                style="background: #10B981; color: #FFFFFF; border: none; font-weight: 700; padding: 6px 14px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;"
+                onclick="handleApproveEvaluation('${recordId}')"
+                title="Approve this submission"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Approve
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm"
+                id="btn-modal-reject"
+                style="background: #EF4444; color: #FFFFFF; border: none; font-weight: 700; padding: 6px 14px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;"
+                onclick="openRejectionModal('${recordId}')"
+                title="Reject this submission with required feedback"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                Reject
+              </button>
+            `;
+          }
+        }
+
+        document.getElementById("details-modal").classList.add("active");
+      }
+
+      // ==========================================================================
+      // Approval Workflow Handlers (Requirement 2 & 3)
+      // ==========================================================================
+      async function handleApproveEvaluation(recordId) {
+        const btn = document.getElementById("btn-modal-approve");
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = `<span class="spinner-inline" style="width: 12px; height: 12px; border-width: 2px;"></span> Approving...`;
+        }
+
+        try {
+          const response = await fetch('/.netlify/functions/approve-evaluation', {
+            method: 'POST',
+            headers: {
+              'x-api-key': getManagerApiKey(),
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id: recordId,
+              action: 'approve',
+              reviewerName: 'Manager'
+            })
+          });
+
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || !result.success) {
+            throw new Error(result.error || `Server responded with status ${response.status}`);
+          }
+
+          showToast("Evaluation marked as Approved and locked for compliance.");
+          await fetchEvaluations(currentPage, currentLimit);
+          openEvaluationDetails(recordId);
+        } catch (err) {
+          console.error("Approve error:", err);
+          showToast("Approval Error: " + err.message, true);
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Approve`;
+          }
+        }
+      }
+
+      let pendingRejectRecordId = null;
+
+      function openRejectionModal(recordId) {
+        pendingRejectRecordId = recordId;
+        const record = evaluationsList.find(r => (r._id === recordId || r.id === recordId));
+
+        const compEl = document.getElementById("reject-modal-company");
+        const devEl = document.getElementById("reject-modal-device");
+        const assessorEl = document.getElementById("reject-modal-assessor");
+        const alertBox = document.getElementById("reject-modal-alert");
+        const reasonInput = document.getElementById("reject-reason-input");
+
+        if (compEl) compEl.textContent = record ? (record.companyName || "N/A") : "N/A";
+        if (devEl) devEl.textContent = record ? (record.deviceModel || "N/A") : "N/A";
+        if (assessorEl) assessorEl.textContent = record ? (record.assessorName || "N/A") : "N/A";
+        if (alertBox) alertBox.style.display = "none";
+        if (reasonInput) {
+          reasonInput.value = record?.rejectionReason || "";
+          setTimeout(() => reasonInput.focus(), 150);
+        }
+
+        const modal = document.getElementById("rejection-reason-modal");
+        if (modal) modal.classList.add("active");
+      }
+
+      function closeRejectionModal() {
+        const modal = document.getElementById("rejection-reason-modal");
+        if (modal) modal.classList.remove("active");
+        pendingRejectRecordId = null;
+      }
+
+      async function executeRejection() {
+        if (!pendingRejectRecordId) return;
+        const recordId = pendingRejectRecordId;
+        const reasonInput = document.getElementById("reject-reason-input");
+        const reason = (reasonInput?.value || "").trim();
+        const alertBox = document.getElementById("reject-modal-alert");
+        const alertMsg = document.getElementById("reject-modal-alert-msg");
+        const btn = document.getElementById("btn-confirm-reject");
+
+        if (alertBox) alertBox.style.display = "none";
+
+        if (!reason) {
+          if (alertBox && alertMsg) {
+            alertMsg.textContent = "Please provide specific rejection feedback / remediation notes for the assessor.";
+            alertBox.style.display = "flex";
+          } else {
+            showToast("Please provide a rejection reason.", true);
+          }
+          return;
+        }
+
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = "Rejecting...";
+        }
+
+        try {
+          const response = await fetch('/.netlify/functions/approve-evaluation', {
+            method: 'POST',
+            headers: {
+              'x-api-key': getManagerApiKey(),
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id: recordId,
+              action: 'reject',
+              reason: reason,
+              reviewerName: 'Manager'
+            })
+          });
+
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || !result.success) {
+            throw new Error(result.error || `Server responded with status ${response.status}`);
+          }
+
+          closeRejectionModal();
+          showToast("Evaluation rejected and returned for assessor remediation.");
+          await fetchEvaluations(currentPage, currentLimit);
+          if (activeEvaluation && (activeEvaluation._id === recordId || activeEvaluation.id === recordId)) {
+            openEvaluationDetails(recordId);
+          }
+        } catch (err) {
+          console.error("Reject error:", err);
+          if (alertBox && alertMsg) {
+            alertMsg.textContent = err.message;
+            alertBox.style.display = "flex";
+          } else {
+            showToast("Rejection Error: " + err.message, true);
+          }
+        } finally {
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = "Confirm Rejection";
+          }
+        }
+      }
+
+      // ==========================================================================
+      // Bulk CSV Export Function (Pass 2)
+      // ==========================================================================
+      async function exportFilteredCsv() {
+        const searchTerm = (document.getElementById("table-search")?.value || "").trim();
+        const ratingFilter = document.getElementById("rating-filter")?.value || "all";
+        const includeDeleted = document.getElementById("include-deleted-toggle")?.checked ? "true" : "false";
+        const exportBtn = document.getElementById("btn-export-csv");
+
+        if (exportBtn) {
+          exportBtn.disabled = true;
+          exportBtn.innerHTML = `<span class="spinner-inline" style="width: 12px; height: 12px; border-width: 2px;"></span> Exporting...`;
+        }
+
+        try {
+          const params = new URLSearchParams({
+            search: searchTerm,
+            rating: ratingFilter,
+            includeDeleted
+          });
+
+          const response = await fetch(`/.netlify/functions/export-evaluations?${params.toString()}`, {
+            method: "GET",
+            headers: {
+              "x-api-key": getManagerApiKey()
+            }
+          });
+
+          if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.error || `Export failed with status ${response.status}`);
+          }
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          const today = new Date().toISOString().split("T")[0];
+          a.href = url;
+          a.download = `trackscore_evaluations_${today}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          a.remove();
+        } catch (error) {
+          console.error("CSV Export error:", error);
+          showToast("CSV Export Error: " + error.message, true);
+        } finally {
+          if (exportBtn) {
+            exportBtn.disabled = false;
+            exportBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Export Filtered (CSV)
+            `;
+          }
+        }
+      }
+
+      // ==========================================================================
+      // Combined Multi-Record PDF Export (Pass 2)
+      // ==========================================================================
+      function exportCombinedPdf() {
+        const searchTerm = (document.getElementById("table-search")?.value || "").toLowerCase().trim();
+        const ratingFilter = document.getElementById("rating-filter")?.value || "all";
+
+        const recordsToExport = evaluationsList.filter(r => {
+          const matchesSearch =
+            (r.companyName || "").toLowerCase().includes(searchTerm) ||
+            (r.deviceModel || "").toLowerCase().includes(searchTerm) ||
+            (r.assessorName || "").toLowerCase().includes(searchTerm) ||
+            (r.packageName || "").toLowerCase().includes(searchTerm);
+
+          const matchesRating =
+            ratingFilter === "all" ||
+            String(r.starsCount) === ratingFilter;
+
+          return matchesSearch && matchesRating;
+        });
+
+        if (recordsToExport.length === 0) {
+          showToast("No evaluation records match the current filters to export.", true);
+          return;
+        }
+
+        const combinedPdfBtn = document.getElementById("btn-combined-pdf");
+        if (combinedPdfBtn) {
+          combinedPdfBtn.disabled = true;
+          combinedPdfBtn.innerHTML = `<span class="spinner-inline" style="width: 12px; height: 12px; border-width: 2px;"></span> Generating PDF...`;
+        }
+
+        const todayStr = new Date().toLocaleDateString("en-MY", { year: "numeric", month: "short", day: "numeric" });
+        
+        const rowsHtml = recordsToExport.map((rec, idx) => {
+          const starsCount = rec.starsCount || 1;
+          let starsStr = "";
+          for (let s = 1; s <= 5; s++) starsStr += s <= starsCount ? "★" : "☆";
+          const dateFormatted = rec.createdAt ? new Date(rec.createdAt).toLocaleDateString() : (rec.assessmentDate || '-');
+          const recStatus = (rec.status || 'pending_review').toUpperCase();
+          const statusColor = recStatus === 'APPROVED' ? '#059669' : (recStatus === 'REJECTED' ? '#DC2626' : '#D97706');
+
+          return `
+            <tr style="background: ${idx % 2 === 0 ? '#FFFFFF' : '#F8FAFC'}; font-size: 8.5px;">
+              <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0; text-align: center; color: #64748B;">${idx + 1}</td>
+              <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0; font-weight: 700;">${escapeHtml(rec.companyName)}</td>
+              <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0;">${escapeHtml(rec.deviceModel)}</td>
+              <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0; color: #64748B;">${escapeHtml(rec.packageName || 'Standard')}</td>
+              <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0; text-align: center; font-weight: 700; color: ${statusColor};">${recStatus}</td>
+              <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0; text-align: center;">${(rec.sectionAScore || 0).toFixed(2)}</td>
+              <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0; text-align: center;">${(rec.sectionBScore || 0).toFixed(2)}</td>
+              <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0; text-align: center; font-weight: 800; color: #C2410C;">${(rec.totalScore || 0).toFixed(2)}</td>
+              <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0; text-align: center; color: #B45309; font-weight: 700;">${starsStr}</td>
+              <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0; text-align: right; color: #64748B;">${dateFormatted}</td>
+            </tr>
+          `;
+        }).join("");
+
+        const template = `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1E293B; padding: 14px 18px; width: 100%; box-sizing: border-box;">
+            <div style="background: #1A1A1A; border-bottom: 3px solid #F58220; padding: 12px 16px; color: #FFFFFF; border-radius: 4px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 8px; text-transform: uppercase; letter-spacing: 1.5px; color: #F58220; font-weight: 800;">MALAYSIAN INSTITUTE OF ROAD SAFETY RESEARCH (MIROS)</div>
+                <h2 style="margin: 2px 0 0 0; font-size: 16px; font-weight: 800; color: #FFFFFF;">COMBINED TELEMATICS EVALUATION REGISTRY</h2>
+                <div style="font-size: 9px; color: #CBD5E1; margin-top: 2px;">Managerial Review Audit &bull; TrackScore Verification Standard</div>
+              </div>
+              <div style="text-align: right; font-size: 9px; color: #CBD5E1;">
+                <div>Export Date: ${todayStr}</div>
+                <div style="font-weight: 700; color: #F58220; margin-top: 2px;">Total Records: ${recordsToExport.length}</div>
+              </div>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #CBD5E1; margin-bottom: 14px;">
+              <thead>
+                <tr style="background: #1A1A1A; color: #FFFFFF; font-size: 8px; text-transform: uppercase;">
+                  <th style="padding: 5px 5px; text-align: center; width: 3%;">#</th>
+                  <th style="padding: 5px 5px; text-align: left; width: 20%;">Company</th>
+                  <th style="padding: 5px 5px; text-align: left; width: 18%;">Device Model</th>
+                  <th style="padding: 5px 5px; text-align: left; width: 12%;">Package</th>
+                  <th style="padding: 5px 5px; text-align: center; width: 12%;">Status</th>
+                  <th style="padding: 5px 5px; text-align: center; width: 7%;">Sec A</th>
+                  <th style="padding: 5px 5px; text-align: center; width: 7%;">Sec B</th>
+                  <th style="padding: 5px 5px; text-align: center; width: 7%; color: #F58220;">Total</th>
+                  <th style="padding: 5px 5px; text-align: center; width: 14%;">Rating</th>
+                  <th style="padding: 5px 5px; text-align: right; width: 8%;">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E2E8F0; padding-top: 8px; font-size: 8px; color: #64748B;">
+              <div>TrackScore Digital Assessor Evaluation System &bull; Official MIROS Telematics Standardization</div>
+              <div>Authorized Managerial Export</div>
+            </div>
+          </div>
+        `;
+
+        const opt = {
+          margin: [6, 8, 6, 8],
+          filename: `TrackScore_Combined_Report_${new Date().toISOString().split('T')[0]}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, logging: false },
+          jsPDF: { unit: "mm", format: "a4", orientation: "landscape" }
+        };
+
+        window.html2pdf().from(template).set(opt).save().then(() => {
+          if (combinedPdfBtn) {
+            combinedPdfBtn.disabled = false;
+            combinedPdfBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              Combined PDF
+            `;
+          }
+        });
+      }
+
+      function closeModal() {
+        document.getElementById("details-modal").classList.remove("active");
+      }
+
+      function downloadPdfFromModal() {
+        if (!activeEvaluation) return;
+
+        const record = activeEvaluation;
+        const starsCount = record.starsCount || 1;
+        let starDisplay = "";
+        for (let s = 1; s <= 5; s++) {
+          starDisplay += s <= starsCount ? "★" : "☆";
+        }
+
+        const breakdown = Array.isArray(record.breakdown) ? record.breakdown : [];
+        const leftColumnItems = breakdown.slice(0, 17);
+        const rightColumnItems = breakdown.slice(17);
+        const normStatus = (record.status || 'pending_review').toUpperCase();
+        const statusBadgeBg = normStatus === 'APPROVED' ? '#059669' : (normStatus === 'REJECTED' ? '#DC2626' : '#D97706');
+        const statusBadgeText = normStatus === 'APPROVED' ? 'APPROVED • MIROS COMPLIANT' : (normStatus === 'REJECTED' ? 'REJECTED • REMEDIATION' : 'PENDING REVIEW');
+
+        const renderColumnRows = (itemsList, startIdx) => itemsList.map((item, idx) => `
+          <tr style="background-color: ${idx % 2 === 0 ? '#FFFFFF' : '#F8FAFC'};">
+            <td style="padding: 2.5px 4px; border-bottom: 1px solid #E2E8F0; font-size: 8px; text-align: center; color: #64748B; font-weight: 700;">
+              ${item.section || 'A'}${startIdx + idx + 1}
+            </td>
+            <td style="padding: 2.5px 5px; border-bottom: 1px solid #E2E8F0; font-size: 8px; font-weight: 600; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">
+              ${escapeHtml(item.name)}
+            </td>
+            <td style="padding: 2.5px 5px; border-bottom: 1px solid #E2E8F0; font-size: 7.5px; color: ${item.points > 0 ? (item.section === 'A' ? '#C2410C' : '#1D4ED8') : '#64748B'}; font-weight: ${item.points > 0 ? '700' : '400'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;">
+              ${escapeHtml(item.selectedOption)}
+            </td>
+            <td style="padding: 2.5px 5px; border-bottom: 1px solid #E2E8F0; font-size: 8px; font-weight: 700; text-align: right; color: ${item.points > 0 ? '#0F172A' : '#94A3B8'}; white-space: nowrap;">
+              ${Number(item.points || 0).toFixed(2)} pts
+            </td>
+          </tr>
+        `).join("");
+
+        const rawHtmlTemplate = `
+          <div id="trackscore-pdf-document" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1A1A1A; background-color: #FFFFFF; padding: 12px 14px; width: 100%; max-width: 780px; margin: 0 auto; box-sizing: border-box;">
+            <!-- Report Header -->
+            <div style="background-color: #1A1A1A; border-bottom: 3px solid #F58220; padding: 10px 14px; color: #FFFFFF; border-radius: 4px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 8.5px; text-transform: uppercase; letter-spacing: 1.2px; color: #F58220; font-weight: 800; margin-bottom: 2px;">MALAYSIAN INSTITUTE OF ROAD SAFETY RESEARCH (MIROS)</div>
+                <h1 style="margin: 0; font-size: 17px; font-weight: 800; letter-spacing: 0.5px; color: #FFFFFF;">TRACKSCORE ASSESSMENT REPORT</h1>
+                <div style="font-size: 9.5px; color: #CBD5E1; margin-top: 1px;">Official Telematics Hardware & Software Compliance Matrix</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="display: inline-block; background: ${statusBadgeBg}; color: #FFFFFF; font-weight: 800; font-size: 9.5px; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.5px;">
+                  ${statusBadgeText}
+                </div>
+                <div style="font-size: 9.5px; color: #CBD5E1; margin-top: 3px;">ID: ${record._id || record.id}</div>
+              </div>
+            </div>
+
+            <!-- Metadata Grid -->
+            <div style="border: 1px solid #E2E8F0; border-radius: 4px; padding: 6px 10px; margin-bottom: 10px; background-color: #F8FAFC;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="width: 18%; padding: 2.5px 5px; font-size: 8.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">Company:</td>
+                  <td style="width: 32%; padding: 2.5px 5px; font-size: 10.5px; font-weight: 700; color: #0F172A;">${escapeHtml(record.companyName)}</td>
+                  <td style="width: 18%; padding: 2.5px 5px; font-size: 8.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">Date:</td>
+                  <td style="width: 32%; padding: 2.5px 5px; font-size: 10.5px; font-weight: 700; color: #0F172A;">${escapeHtml(record.createdAt ? new Date(record.createdAt).toLocaleDateString() : '')}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 2.5px 5px; font-size: 8.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">Device Model:</td>
+                  <td style="padding: 2.5px 5px; font-size: 10.5px; font-weight: 700; color: #0F172A;">${escapeHtml(record.deviceModel)}</td>
+                  <td style="padding: 2.5px 5px; font-size: 8.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">Assessor ID/Name:</td>
+                  <td style="padding: 2.5px 5px; font-size: 10.5px; font-weight: 700; color: #0F172A;">${escapeHtml(record.assessorName)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 2.5px 5px; font-size: 8.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">Package:</td>
+                  <td style="padding: 2.5px 5px; font-size: 10.5px; font-weight: 700; color: #0F172A;">${escapeHtml(record.packageName || "Standard Package")}</td>
+                  <td style="padding: 2.5px 5px; font-size: 8.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">Rubric Version:</td>
+                  <td style="padding: 2.5px 5px; font-size: 10.5px; font-weight: 700; color: #0F172A;">v1.0 (33 Criteria / 43 Pts)</td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Score Summary Table -->
+            <div style="margin-bottom: 10px;">
+              <table style="width: 100%; border-collapse: collapse; border: 1px solid #1A1A1A; border-radius: 4px; overflow: hidden;">
+                <thead>
+                  <tr style="background-color: #1A1A1A; color: #FFFFFF;">
+                    <th style="padding: 5px 8px; text-align: left; font-size: 9px; font-weight: 700; width: 25%;">Section A Score (Basic)</th>
+                    <th style="padding: 5px 8px; text-align: left; font-size: 9px; font-weight: 700; width: 25%;">Section B Score (Additional)</th>
+                    <th style="padding: 5px 8px; text-align: left; font-size: 9px; font-weight: 700; width: 25%; color: #F58220;">Total Score</th>
+                    <th style="padding: 5px 8px; text-align: left; font-size: 9px; font-weight: 700; width: 25%;">Certification Grade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="background-color: #FFFFFF;">
+                    <td style="padding: 6px 8px; font-size: 13px; font-weight: 800; border-right: 1px solid #E2E8F0;">
+                      ${(record.sectionAScore || 0).toFixed(2)} <span style="font-size: 9.5px; font-weight: 500; color: #64748B;">/ 33.00</span>
+                    </td>
+                    <td style="padding: 6px 8px; font-size: 13px; font-weight: 800; border-right: 1px solid #E2E8F0;">
+                      ${(record.sectionBScore || 0).toFixed(2)} <span style="font-size: 9.5px; font-weight: 500; color: #64748B;">/ 10.00</span>
+                    </td>
+                    <td style="padding: 6px 8px; font-size: 15px; font-weight: 900; color: #F58220; border-right: 1px solid #E2E8F0;">
+                      ${(record.totalScore || 0).toFixed(2)} <span style="font-size: 10px; font-weight: 600; color: #64748B;">/ 43.00</span>
+                    </td>
+                    <td style="padding: 6px 8px;">
+                      <div style="font-size: 13px; font-weight: 800; color: #B45309;">
+                        ${starDisplay} <span style="font-size: 10px;">(${(record.starRating || 0).toFixed(2)}/5.0)</span>
+                      </div>
+                      <div style="font-size: 9px; font-weight: 700; color: #475569; margin-top: 1px;">
+                        ${escapeHtml(record.ratingLabel || '')}
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Itemized Criteria Matrix Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; border-bottom: 2px solid #F58220; padding-bottom: 3px;">
+              <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #1A1A1A;">
+                Itemized Evaluation Breakdown (${breakdown.length} Items)
+              </span>
+              <span style="font-size: 8.5px; color: #64748B; font-weight: 600;">
+                24 Core Requirements + 9 Security Items
+              </span>
+            </div>
+
+            <!-- Dual-Column Itemized Matrix: Fits cleanly on 1 Single Page -->
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+              <tr>
+                <!-- Column 1: Items 1 to 17 -->
+                <td style="width: 49.5%; vertical-align: top; padding-right: 4px;">
+                  <table style="width: 100%; border-collapse: collapse; border: 1px solid #CBD5E1;">
+                    <thead>
+                      <tr style="background-color: #1A1A1A; color: #FFFFFF;">
+                        <th style="padding: 3px 4px; font-size: 7.5px; font-weight: 700; width: 10%; text-align: center;">#</th>
+                        <th style="padding: 3px 5px; font-size: 7.5px; font-weight: 700; width: 48%; text-align: left;">Criterion</th>
+                        <th style="padding: 3px 5px; font-size: 7.5px; font-weight: 700; width: 26%; text-align: left;">Selected Option</th>
+                        <th style="padding: 3px 5px; font-size: 7.5px; font-weight: 700; width: 16%; text-align: right;">Pts</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${renderColumnRows(leftColumnItems, 0)}
+                    </tbody>
+                  </table>
+                </td>
+
+                <!-- Column 2: Items 18 to 33 -->
+                <td style="width: 49.5%; vertical-align: top; padding-left: 4px;">
+                  <table style="width: 100%; border-collapse: collapse; border: 1px solid #CBD5E1;">
+                    <thead>
+                      <tr style="background-color: #1A1A1A; color: #FFFFFF;">
+                        <th style="padding: 3px 4px; font-size: 7.5px; font-weight: 700; width: 10%; text-align: center;">#</th>
+                        <th style="padding: 3px 5px; font-size: 7.5px; font-weight: 700; width: 48%; text-align: left;">Criterion</th>
+                        <th style="padding: 3px 5px; font-size: 7.5px; font-weight: 700; width: 26%; text-align: left;">Selected Option</th>
+                        <th style="padding: 3px 5px; font-size: 7.5px; font-weight: 700; width: 16%; text-align: right;">Pts</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${renderColumnRows(rightColumnItems, leftColumnItems.length)}
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Sign-Off & Verification Footer -->
+            <div style="border-top: 1px solid #E2E8F0; padding-top: 6px; font-size: 8px; color: #64748B;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="width: 55%; vertical-align: top;">
+                    <div style="font-weight: 700; color: #1A1A1A; margin-bottom: 1px;">TrackScore Digital Assessor Matrix</div>
+                    <div>Certified by Malaysian Institute of Road Safety Research (MIROS)</div>
+                    <div style="margin-top: 1px;">Archive Print Timestamp: ${new Date().toLocaleString()}</div>
+                  </td>
+                  <td style="width: 45%; vertical-align: top; text-align: right;">
+                    <div style="display: inline-block; text-align: center; border-top: 1px solid #94A3B8; padding-top: 2px; min-width: 150px;">
+                      <div style="font-weight: 700; color: #1A1A1A; font-size: 8.5px;">${escapeHtml(record.assessorName)}</div>
+                      <div style="font-size: 7.5px; color: #64748B;">Authorized Assessor Sign-Off</div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        `;
+
+        const opt = {
+          margin: [6, 8, 6, 8],
+          filename: `TrackScore_Record_${(record.companyName || 'Company').replace(/[^a-zA-Z0-9]/g, "_")}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, logging: false },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        };
+
+        window.html2pdf().from(rawHtmlTemplate).set(opt).save();
+      }
+
+      function escapeHtml(string) {
+        if (!string) return "";
+        const map = {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        };
+        return String(string).replace(/[&<>"']/g, m => map[m]);
+      }
+
+      function showToast(message, isError = false) {
+        let toastContainer = document.getElementById("toast-container");
+        if (!toastContainer) {
+          toastContainer = document.createElement("div");
+          toastContainer.id = "toast-container";
+          toastContainer.className = "toast-container";
+          document.body.appendChild(toastContainer);
+        }
+
+        const toast = document.createElement("div");
+        toast.className = `toast ${isError ? 'toast-error' : ''}`;
+        toast.innerHTML = `
+          <span>${isError ? '⚠️' : '✓'}</span>
+          <span>${escapeHtml(message)}</span>
+        `;
+
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateX(100%)";
+          toast.style.transition = "all 0.3s ease";
+          setTimeout(() => toast.remove(), 300);
+        }, 3500);
+      }
+
+      // Attach UI event listeners
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchEvaluations();
+
+        document.getElementById("table-search")?.addEventListener("input", () => renderEvaluationsTable(evaluationsList));
+        document.getElementById("rating-filter")?.addEventListener("change", () => renderEvaluationsTable(evaluationsList));
+        document.getElementById("status-filter")?.addEventListener("change", () => fetchEvaluations(1, currentLimit));
+        document.getElementById("btn-refresh")?.addEventListener("click", () => fetchEvaluations(currentPage, currentLimit));
+
+        // Export and toggle listeners
+        document.getElementById("btn-export-csv")?.addEventListener("click", exportFilteredCsv);
+        document.getElementById("btn-combined-pdf")?.addEventListener("click", exportCombinedPdf);
+        document.getElementById("include-deleted-toggle")?.addEventListener("change", () => fetchEvaluations(1, currentLimit));
+
+        document.getElementById("modal-close")?.addEventListener("click", closeModal);
+        document.getElementById("modal-close-action")?.addEventListener("click", closeModal);
+        document.getElementById("modal-download-pdf")?.addEventListener("click", downloadPdfFromModal);
+
+        document.getElementById("details-modal")?.addEventListener("click", (e) => {
+          if (e.target.id === "details-modal") closeModal();
+        });
+
+        document.getElementById("edit-modal-close")?.addEventListener("click", closeEditModal);
+        document.getElementById("edit-modal-cancel")?.addEventListener("click", closeEditModal);
+        document.getElementById("edit-modal")?.addEventListener("click", (e) => {
+          if (e.target.id === "edit-modal") closeEditModal();
+        });
+
+        // Archive confirmation modal listeners
+        document.getElementById("btn-confirm-archive")?.addEventListener("click", executeArchive);
+        document.getElementById("archive-modal-close")?.addEventListener("click", closeArchiveModal);
+        document.getElementById("archive-modal-cancel")?.addEventListener("click", closeArchiveModal);
+        document.getElementById("archive-modal")?.addEventListener("click", (e) => {
+          if (e.target.id === "archive-modal") closeArchiveModal();
+        });
+
+        // Rejection reason modal listeners (Requirement 2)
+        document.getElementById("btn-confirm-reject")?.addEventListener("click", executeRejection);
+        document.getElementById("reject-modal-close")?.addEventListener("click", closeRejectionModal);
+        document.getElementById("reject-modal-cancel")?.addEventListener("click", closeRejectionModal);
+        document.getElementById("rejection-reason-modal")?.addEventListener("click", (e) => {
+          if (e.target.id === "rejection-reason-modal") closeRejectionModal();
+        });
+      });
+    </script>
+  </body>
+</html>

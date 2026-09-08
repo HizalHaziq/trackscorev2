@@ -1,0 +1,6 @@
+{
+  "name": "TrackScore",
+  "description": "Digital Assessor Evaluation System for hardware and software evaluation with real-time scoring, PDF report generation, and managerial review dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

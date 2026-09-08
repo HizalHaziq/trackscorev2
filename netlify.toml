@@ -1,0 +1,28 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[dev]
+  command = "npm run dev"
+  port = 3000
+  targetPort = 3000
+  publish = "."
+
+# Map standard /api/* endpoints to serverless Netlify functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# HTML Route aliases
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+# Single-Page / Client Fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
