@@ -4,13 +4,18 @@
  * Includes:
  * - Shared-secret header authentication (x-api-key)
  * - Server-side score recomputation & cryptographic-grade integrity validation
- * - Duplicate submission detection (Company + Device + Assessor + Date)
+ * - Duplicate submission detection (Company + Device + Assessor ID + Date)
  * - Rubric versioning tag
+ * - Make.com Webhook Integration for Excel Live Sync
  */
 
 import { connectToDatabase, COLLECTION_NAME, buildMongoIdFilter } from './db.js';
 import { validateRole, ROLE_ASSESSOR, authErrorResponse } from './auth.js';
 import { recomputeScores, RUBRIC_VERSION, MAX_TOTAL_SCORE } from './rubric.js';
+
+// === CONFIGURATION ===
+// Paste your Make.com Webhook URL here
+const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/gayv3o78cvcz4cnu7gpyjp4c8udjrpig"; 
 
 export const handler = async (event, context) => {
   // CORS Headers
@@ -22,10 +27,7 @@ export const handler = async (event, context) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 204,
-      headers
-    };
+    return { statusCode: 204, headers };
   }
 
   if (event.httpMethod !== 'POST') {
@@ -54,21 +56,23 @@ export const handler = async (event, context) => {
       };
     }
 
-    // 2. Validate mandatory metadata fields
-    const { companyName, deviceModel, assessorName, assessmentDate, packageName, breakdown, resubmitRecordId } = payload;
-    if (!companyName || !deviceModel || !assessorName) {
+    // 2. Validate mandatory metadata fields (Added Assessor ID)
+    const { companyName, deviceModel, assessorName, assessorId, assessmentDate, packageName, breakdown, resubmitRecordId } = payload;
+    
+    if (!companyName || !deviceModel || !assessorName || !assessorId) {
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({
-          error: 'Missing required fields: Company Name, Device Model, and Assessor Name are mandatory.'
+          error: 'Missing required fields: Company Name, Device Model, Assessor Name, and Assessor ID are mandatory.'
         })
       };
     }
 
     const cleanCompany = String(companyName).trim();
     const cleanModel = String(deviceModel).trim();
-    const cleanAssessor = String(assessorName).trim();
+    const cleanAssessorName = String(assessorName).trim();
+    const cleanAssessorId = String(assessorId).trim();
     const cleanDate = assessmentDate ? String(assessmentDate).trim().substring(0, 10) : new Date().toISOString().substring(0, 10);
 
     // 3. Server-side score recomputation & integrity check
@@ -111,7 +115,31 @@ export const handler = async (event, context) => {
 
     const connection = await connectToDatabase();
 
-    // 4. Handle Re-submission of Rejected Records (Requirement 2 & 4)
+    // Helper Function: Send Data to Make.com
+    const syncToWebhook = async (recordData, isResubmission = false) => {
+      if (MAKE_WEBHOOK_URL && MAKE_WEBHOOK_URL !== "YOUR_MAKE_WEBHOOK_URL_HERE") {
+        try {
+          await fetch(MAKE_WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              companyName: recordData.companyName,
+              deviceModel: recordData.deviceModel,
+              assessorId: recordData.assessorId,
+              assessorName: recordData.assessorName,
+              score: recordData.totalScore,
+              status: recordData.status,
+              isResubmission: isResubmission,
+              date: new Date().toISOString()
+            })
+          });
+        } catch (webhookError) {
+          console.error("Make.com Webhook Sync Failed:", webhookError);
+        }
+      }
+    };
+
+    // 4. Handle Re-submission of Rejected Records
     if (resubmitRecordId) {
       let existingToResubmit = null;
       if (connection.isMongoAtlas) {
@@ -136,7 +164,8 @@ export const handler = async (event, context) => {
           companyName: cleanCompany,
           deviceModel: cleanModel,
           packageName: packageName ? String(packageName).trim() : 'Standard Evaluation',
-          assessorName: cleanAssessor,
+          assessorName: cleanAssessorName,
+          assessorId: cleanAssessorId, // Updated to store ID
           assessmentDate: cleanDate,
           sectionAScore: recomputed.sectionAScore,
           sectionBScore: recomputed.sectionBScore,
@@ -154,7 +183,7 @@ export const handler = async (event, context) => {
         const historyEntry = {
           action: 'resubmitted_by_assessor',
           timestamp: new Date().toISOString(),
-          changedBy: cleanAssessor,
+          changedBy: `${cleanAssessorName} (${cleanAssessorId})`,
           note: `Assessor remediated criteria and resubmitted for manager review. (Previous score: ${(existingToResubmit.totalScore || 0).toFixed(2)}, New score: ${recomputed.totalScore.toFixed(2)})`,
           previousScores: {
             sectionAScore: existingToResubmit.sectionAScore,
@@ -173,6 +202,9 @@ export const handler = async (event, context) => {
         } else {
           await connection.updateEvaluation(resubmitRecordId, updateFields, historyEntry);
         }
+
+        // Trigger Webhook for Resubmission
+        await syncToWebhook(updateFields, true);
 
         return {
           statusCode: 200,
@@ -196,14 +228,13 @@ export const handler = async (event, context) => {
     }
 
     // 5. Duplicate Submission Guard (For new submissions)
-    // Check for existing record with same Company + Device + Assessor + Date
     if (connection.isMongoAtlas) {
       const collection = connection.db.collection(COLLECTION_NAME);
       const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const existing = await collection.findOne({
         companyName: { $regex: new RegExp(`^${escapeRegex(cleanCompany)}$`, 'i') },
         deviceModel: { $regex: new RegExp(`^${escapeRegex(cleanModel)}$`, 'i') },
-        assessorName: { $regex: new RegExp(`^${escapeRegex(cleanAssessor)}$`, 'i') },
+        assessorId: cleanAssessorId, // Guard strictly by ID to prevent name collisions
         deletedAt: null,
         $or: [
           { assessmentDate: cleanDate },
@@ -216,34 +247,35 @@ export const handler = async (event, context) => {
           statusCode: 409,
           headers,
           body: JSON.stringify({
-            error: `Conflict: An evaluation record for Company "${cleanCompany}", Device "${cleanModel}", Assessor "${cleanAssessor}" on date ${cleanDate} already exists (ID: ${existing._id}). Please edit the existing record or update the assessment date/model.`,
+            error: `Conflict: An evaluation record for Company "${cleanCompany}", Device "${cleanModel}", Assessor "${cleanAssessorName}" (${cleanAssessorId}) on date ${cleanDate} already exists (ID: ${existing._id}). Please edit the existing record or update the assessment date/model.`,
             existingId: existing._id
           })
         };
       }
     } else {
-      const existing = await connection.findDuplicate(cleanCompany, cleanModel, cleanAssessor, cleanDate);
+      // Fallback for local storage (checks name instead of ID if local method isn't updated)
+      const existing = await connection.findDuplicate(cleanCompany, cleanModel, cleanAssessorName, cleanDate);
       if (existing) {
         return {
           statusCode: 409,
           headers,
           body: JSON.stringify({
-            error: `Conflict: An evaluation record for Company "${cleanCompany}", Device "${cleanModel}", Assessor "${cleanAssessor}" on date ${cleanDate} already exists (ID: ${existing._id}). Please edit the existing record or update the assessment date/model.`,
+            error: `Conflict: An evaluation record for Company "${cleanCompany}", Device "${cleanModel}", Assessor "${cleanAssessorName}" on date ${cleanDate} already exists (ID: ${existing._id}). Please edit the existing record or update the assessment date/model.`,
             existingId: existing._id
           })
         };
       }
     }
 
-    // 5. Build authoritative evaluation document
+    // 6. Build authoritative evaluation document
     const evaluationRecord = {
       rubricVersion: payload.rubricVersion || RUBRIC_VERSION,
       companyName: cleanCompany,
       deviceModel: cleanModel,
       packageName: packageName ? String(packageName).trim() : 'Standard Evaluation',
-      assessorName: cleanAssessor,
+      assessorName: cleanAssessorName,
+      assessorId: cleanAssessorId, // Added Assessor ID
       assessmentDate: cleanDate,
-      // Store verified server-recomputed scores
       sectionAScore: recomputed.sectionAScore,
       sectionBScore: recomputed.sectionBScore,
       totalScore: recomputed.totalScore,
@@ -266,6 +298,7 @@ export const handler = async (event, context) => {
     let insertedId;
     let storageType;
 
+    // 7. Persist to Database
     if (connection.isMongoAtlas) {
       const collection = connection.db.collection(COLLECTION_NAME);
       const result = await collection.insertOne(evaluationRecord);
@@ -276,6 +309,9 @@ export const handler = async (event, context) => {
       insertedId = result.insertedId;
       storageType = 'local_store';
     }
+
+    // 8. Trigger Webhook for New Submission
+    await syncToWebhook(evaluationRecord, false);
 
     return {
       statusCode: 200,
@@ -308,5 +344,3 @@ export const handler = async (event, context) => {
     };
   }
 };
-
-export default { handler };

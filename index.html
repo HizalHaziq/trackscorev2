@@ -20,17 +20,17 @@
         <a href="/index.html" class="brand-wrapper" id="brand-link">
           <div class="brand-emblem" id="brand-emblem">TS</div>
           <div class="brand-details">
-            <h1>TrackScore <span class="brand-badge">MIROS Matrix</span></h1>
-            <p class="brand-subtitle">Digital Assessor Evaluation System • Telematics Hardware & Software Verification</p>
+            <h1>TrackScore <span class="brand-badge">MIROS</span></h1>
+            <p class="brand-subtitle">Digital Evaluation System for Telematics Hardware and Software Compliance</p>
           </div>
         </a>
 
         <nav class="nav-links" id="main-nav">
           <button type="button" class="nav-btn" id="btn-my-drafts" title="Manage your in-progress evaluation drafts" style="cursor: pointer; font-family: inherit;">
-            📋 My Drafts (<span id="header-drafts-count">0</span>/3)
+             My Drafts (<span id="header-drafts-count">0</span>/3)
           </button>
           <a href="/index.html" class="nav-btn active" id="nav-eval-form">Evaluation Form</a>
-          <a href="/dashboard.html" class="nav-btn" id="nav-dashboard">Managerial Dashboard</a>
+          <a href="/dashboard.html" class="nav-btn" id="nav-dashboard">Executive Summary</a>
         </nav>
       </div>
     </header>
@@ -147,13 +147,28 @@
 
             <div class="form-group">
               <label for="assessorName" class="form-label">
-                Assessor ID / Name <span class="required">*</span>
+                Assessor Name <span class="required">*</span>
               </label>
               <input
                 type="text"
                 id="assessorName"
                 class="form-control"
-                placeholder="e.g. Ts. Mohd Farhan (AS-8812)"
+                placeholder="e.g. Ts. Mohd Farhan"
+                required
+              />
+            </div>
+
+            <!-- ADDED: Dedicated Assessor ID Field -->
+            <div class="form-group">
+              <label for="assessorId" class="form-label">
+                Assessor ID <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="assessorId"
+                name="assessorId"
+                class="form-control"
+                placeholder="e.g. ASR-8812"
                 required
               />
             </div>
@@ -329,7 +344,7 @@
             Search evaluations submitted by your Assessor ID to view current review status, manager approvals, or review detailed rejection reasons.
           </p>
           <div style="display: flex; gap: 10px; margin-bottom: 16px;">
-            <input type="text" id="lookup-assessor-input" class="form-control" placeholder="Enter Assessor ID or Name (e.g. AS-8812)" style="flex: 1; padding: 8px 12px; font-size: 14px;" />
+            <input type="text" id="lookup-assessor-input" class="form-control" placeholder="Enter Assessor ID (e.g. ASR-8812)" style="flex: 1; padding: 8px 12px; font-size: 14px;" />
             <button type="button" class="btn btn-primary btn-sm" id="btn-do-lookup" style="white-space: nowrap;">Search Records</button>
           </div>
 
@@ -408,11 +423,8 @@
     </div>
 
     <footer class="site-footer" id="site-footer">
-      <p><strong>TrackScore • Digital Assessor Evaluation System</strong></p>
+      <p><strong>TrackScore • Telematics Assessment & Verification Portal</strong></p>
       <p>Compliant with MIROS Road Safety Telematics Standardization Framework</p>
-      <p style="font-size: 11px; margin-top: 6px; color: #718096;">
-        MongoDB Atlas Persistence • Serverless Netlify Architecture • Pure ES6 Vanilla Architecture
-      </p>
     </footer>
 
     <script src="/app.js"></script>

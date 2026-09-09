@@ -905,7 +905,6 @@
         }
       }
 
-      // Backward-compatibility alias
       function confirmDeleteEvaluation(recordId) {
         openArchiveModal(recordId);
       }
@@ -1470,7 +1469,7 @@
           const statusColor = recStatus === 'APPROVED' ? '#059669' : (recStatus === 'REJECTED' ? '#DC2626' : '#D97706');
 
           return `
-            <tr style="background: ${idx % 2 === 0 ? '#FFFFFF' : '#F8FAFC'}; font-size: 8.5px;">
+            <tr style="background: ${idx % 2 === 0 ? '#FFFFFF' : '#F8FAFC'}; font-size: 8.5px; page-break-inside: avoid; break-inside: avoid;">
               <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0; text-align: center; color: #64748B;">${idx + 1}</td>
               <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0; font-weight: 700;">${escapeHtml(rec.companyName)}</td>
               <td style="padding: 4px 5px; border-bottom: 1px solid #E2E8F0;">${escapeHtml(rec.deviceModel)}</td>
@@ -1526,15 +1525,31 @@
           </div>
         `;
 
+        // 1. Create temporary hidden container to ensure full scrollHeight calculations
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = template;
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.top = '0';
+        tempContainer.style.left = '-9999px';
+        document.body.appendChild(tempContainer);
+
         const opt = {
-          margin: [6, 8, 6, 8],
+          margin: [0.5, 0.5, 0.5, 0.5],
           filename: `TrackScore_Combined_Report_${new Date().toISOString().split('T')[0]}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false },
-          jsPDF: { unit: "mm", format: "a4", orientation: "landscape" }
+          html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            logging: false,
+            scrollY: 0,
+            windowHeight: tempContainer.scrollHeight
+          },
+          jsPDF: { unit: "in", format: "a4", orientation: "landscape" },
+          pagebreak: { mode: ['css', 'legacy'] }
         };
 
-        window.html2pdf().from(template).set(opt).save().then(() => {
+        window.html2pdf().from(tempContainer).set(opt).save().then(() => {
+          document.body.removeChild(tempContainer); // cleanup
           if (combinedPdfBtn) {
             combinedPdfBtn.disabled = false;
             combinedPdfBtn.innerHTML = `
@@ -1547,6 +1562,8 @@
               Combined PDF
             `;
           }
+        }).catch(() => {
+          document.body.removeChild(tempContainer); // cleanup on error
         });
       }
 
@@ -1572,7 +1589,7 @@
         const statusBadgeText = normStatus === 'APPROVED' ? 'APPROVED • MIROS COMPLIANT' : (normStatus === 'REJECTED' ? 'REJECTED • REMEDIATION' : 'PENDING REVIEW');
 
         const renderColumnRows = (itemsList, startIdx) => itemsList.map((item, idx) => `
-          <tr style="background-color: ${idx % 2 === 0 ? '#FFFFFF' : '#F8FAFC'};">
+          <tr style="background-color: ${idx % 2 === 0 ? '#FFFFFF' : '#F8FAFC'}; page-break-inside: avoid; break-inside: avoid;">
             <td style="padding: 2.5px 4px; border-bottom: 1px solid #E2E8F0; font-size: 8px; text-align: center; color: #64748B; font-weight: 700;">
               ${item.section || 'A'}${startIdx + idx + 1}
             </td>
@@ -1734,15 +1751,34 @@
           </div>
         `;
 
+        // 1. Create temporary hidden container to ensure full scrollHeight calculations
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = rawHtmlTemplate;
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.top = '0';
+        tempContainer.style.left = '-9999px';
+        document.body.appendChild(tempContainer);
+
         const opt = {
-          margin: [6, 8, 6, 8],
+          margin: [0.5, 0.5, 0.5, 0.5],
           filename: `TrackScore_Record_${(record.companyName || 'Company').replace(/[^a-zA-Z0-9]/g, "_")}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+          html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            logging: false,
+            scrollY: 0,
+            windowHeight: tempContainer.scrollHeight
+          },
+          jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+          pagebreak: { mode: ['css', 'legacy'] }
         };
 
-        window.html2pdf().from(rawHtmlTemplate).set(opt).save();
+        window.html2pdf().from(tempContainer).set(opt).save().then(() => {
+          document.body.removeChild(tempContainer); // Cleanup
+        }).catch(() => {
+          document.body.removeChild(tempContainer); // Cleanup on error
+        });
       }
 
       function escapeHtml(string) {

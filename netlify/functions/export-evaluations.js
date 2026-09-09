@@ -1,6 +1,6 @@
 /**
  * Netlify Serverless Function: export-evaluations
- * Exports matching evaluation records as a standard CSV format (RFC 4180).
+ * Exports matching evaluation records as a standard Excel file (.xlsx).
  * Features:
  * - Requires MANAGER_API_KEY (role-based access)
  * - Filtering by search text, star rating, date range (startDate, endDate)
@@ -10,16 +10,7 @@
 
 import { connectToDatabase, COLLECTION_NAME } from './db.js';
 import { validateRole, ROLE_MANAGER, authErrorResponse } from './auth.js';
-
-function escapeCsvField(val) {
-  if (val === null || val === undefined) return '""';
-  const str = String(val);
-  // If string contains comma, quote, or newline, escape quotes and wrap in quotes
-  if (/[",\r\n]/.test(str)) {
-    return `"${str.replace(/"/g, '""')}"`;
-  }
-  return `"${str}"`;
-}
+import ExcelJS from 'exceljs'; // Ensure you ran: npm install exceljs
 
 export const handler = async (event, context) => {
   const corsHeaders = {
@@ -64,6 +55,7 @@ export const handler = async (event, context) => {
     const connection = await connectToDatabase();
     let records = [];
 
+    // 1. Fetch & Filter Data
     if (connection.isMongoAtlas) {
       const collection = connection.db.collection(COLLECTION_NAME);
       const query = includeDeleted ? {} : { deletedAt: { $exists: false } };
@@ -85,6 +77,7 @@ export const handler = async (event, context) => {
           (r.companyName || '').toLowerCase().includes(search) ||
           (r.deviceModel || '').toLowerCase().includes(search) ||
           (r.assessorName || '').toLowerCase().includes(search) ||
+          (r.assessorId || '').toLowerCase().includes(search) ||
           (r.packageName || '').toLowerCase().includes(search)
         );
       }
@@ -97,6 +90,7 @@ export const handler = async (event, context) => {
             (r.companyName || '').toLowerCase().includes(search) ||
             (r.deviceModel || '').toLowerCase().includes(search) ||
             (r.assessorName || '').toLowerCase().includes(search) ||
+            (r.assessorId || '').toLowerCase().includes(search) ||
             (r.packageName || '').toLowerCase().includes(search);
           if (!matchSearch) return false;
         }
@@ -118,83 +112,93 @@ export const handler = async (event, context) => {
       });
     }
 
-    // Generate CSV Header
-    const csvHeaders = [
-      'Evaluation ID',
-      'Assessment Date',
-      'Company Name',
-      'Device Model',
-      'Package Tier',
-      'Assessor',
-      'Section A Score (Max 33)',
-      'Section B Score (Max 10)',
-      'Total Score (Max 43)',
-      'Star Rating (Scale 1-5)',
-      'Stars Count',
-      'MIROS Grade Classification',
-      'Rubric Version',
-      'Record Lifecycle',
-      'Approval Status',
-      'Approved By',
-      'Approved At',
-      'Rejection Reason',
-      'Soft-Deleted At',
-      'Soft-Deleted By',
-      'Edit History Count',
-      'Created Timestamp',
-      'Last Updated Timestamp'
+    // 2. Generate Excel Workbook
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Telematics Audit');
+
+    // Define columns
+    sheet.columns = [
+      { header: 'Evaluation ID', key: 'id', width: 25 },
+      { header: 'Assessment Date', key: 'assessmentDate', width: 15 },
+      { header: 'Company Name', key: 'companyName', width: 25 },
+      { header: 'Device Model', key: 'deviceModel', width: 20 },
+      { header: 'Package Tier', key: 'packageName', width: 20 },
+      { header: 'Assessor ID', key: 'assessorId', width: 15 },
+      { header: 'Assessor Name', key: 'assessorName', width: 25 },
+      { header: 'Section A Score (Max 33)', key: 'sectionAScore', width: 20 },
+      { header: 'Section B Score (Max 10)', key: 'sectionBScore', width: 20 },
+      { header: 'Total Score (Max 43)', key: 'totalScore', width: 20 },
+      { header: 'Star Rating (Scale 1-5)', key: 'starRating', width: 20 },
+      { header: 'Stars Count', key: 'starsCount', width: 12 },
+      { header: 'MIROS Grade Classification', key: 'ratingLabel', width: 25 },
+      { header: 'Rubric Version', key: 'rubricVersion', width: 15 },
+      { header: 'Record Lifecycle', key: 'lifecycle', width: 22 },
+      { header: 'Approval Status', key: 'status', width: 20 },
+      { header: 'Approved By', key: 'approvedBy', width: 20 },
+      { header: 'Approved At', key: 'approvedAt', width: 22 },
+      { header: 'Rejection Reason', key: 'rejectionReason', width: 30 },
+      { header: 'Soft-Deleted At', key: 'deletedAt', width: 20 },
+      { header: 'Soft-Deleted By', key: 'deletedBy', width: 20 },
+      { header: 'Edit History Count', key: 'historyCount', width: 18 },
+      { header: 'Created Timestamp', key: 'createdAt', width: 22 },
+      { header: 'Last Updated Timestamp', key: 'updatedAt', width: 22 }
     ];
 
-    const rows = [csvHeaders.map(escapeCsvField).join(',')];
+    // Make the header row bold
+    sheet.getRow(1).font = { bold: true };
 
-    for (const r of records) {
-      const row = [
-        r._id || r.id || '',
-        r.assessmentDate || (r.createdAt ? r.createdAt.substring(0, 10) : ''),
-        r.companyName || '',
-        r.deviceModel || '',
-        r.packageName || 'Standard Evaluation',
-        r.assessorName || '',
-        (r.sectionAScore || 0).toFixed(2),
-        (r.sectionBScore || 0).toFixed(2),
-        (r.totalScore || 0).toFixed(2),
-        (r.starRating || 0).toFixed(2),
-        r.starsCount || 1,
-        r.ratingLabel || '',
-        r.rubricVersion || '1.0.0',
-        r.deletedAt ? 'Soft-Deleted (Archived)' : 'Active',
-        r.status || 'pending_review',
-        r.approvedBy || '',
-        r.approvedAt || '',
-        r.rejectionReason || '',
-        r.deletedAt || '',
-        r.deletedBy || '',
-        Array.isArray(r.evaluationHistory) ? r.evaluationHistory.length : 0,
-        r.createdAt || '',
-        r.updatedAt || ''
-      ];
-      rows.push(row.map(escapeCsvField).join(','));
-    }
+    // 3. Map Data to Rows
+    const rows = records.map(r => ({
+      id: r._id || r.id || '',
+      assessmentDate: r.assessmentDate || (r.createdAt ? r.createdAt.substring(0, 10) : ''),
+      companyName: r.companyName || '',
+      deviceModel: r.deviceModel || '',
+      packageName: r.packageName || 'Standard Evaluation',
+      assessorId: r.assessorId || 'N/A',
+      assessorName: r.assessorName || '',
+      sectionAScore: Number(r.sectionAScore || 0).toFixed(2),
+      sectionBScore: Number(r.sectionBScore || 0).toFixed(2),
+      totalScore: Number(r.totalScore || 0).toFixed(2),
+      starRating: Number(r.starRating || 0).toFixed(2),
+      starsCount: r.starsCount || 1,
+      ratingLabel: r.ratingLabel || '',
+      rubricVersion: r.rubricVersion || '1.0.0',
+      lifecycle: r.deletedAt ? 'Soft-Deleted (Archived)' : 'Active',
+      status: r.status || 'pending_review',
+      approvedBy: r.approvedBy || '',
+      approvedAt: r.approvedAt || '',
+      rejectionReason: r.rejectionReason || '',
+      deletedAt: r.deletedAt || '',
+      deletedBy: r.deletedBy || '',
+      historyCount: Array.isArray(r.evaluationHistory) ? r.evaluationHistory.length : 0,
+      createdAt: r.createdAt || '',
+      updatedAt: r.updatedAt || ''
+    }));
 
-    const csvContent = rows.join('\r\n');
-    const filename = `trackscore_evaluations_${new Date().toISOString().slice(0, 10)}.csv`;
+    sheet.addRows(rows);
+
+    // 4. Output as Base64 for Netlify Response
+    const buffer = await workbook.xlsx.writeBuffer();
+    const filename = `trackscore_evaluations_${new Date().toISOString().slice(0, 10)}.xlsx`;
 
     return {
       statusCode: 200,
       headers: {
         ...corsHeaders,
-        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'Content-Disposition': `attachment; filename="${filename}"`
       },
-      body: csvContent
+      body: buffer.toString('base64'),
+      isBase64Encoded: true
     };
+
   } catch (error) {
-    console.error('Error exporting evaluations to CSV:', error);
+    console.error('Error exporting evaluations to Excel:', error);
     return {
       statusCode: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        error: error.message || 'Failed to export evaluations to CSV'
+        error: error.message || 'Failed to export evaluations to Excel'
       })
     };
   }

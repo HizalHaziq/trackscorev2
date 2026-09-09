@@ -354,6 +354,7 @@ const assessmentState = {
     deviceModel: "",
     packageName: "",
     assessorName: "",
+    assessorId: "", // Added Assessor ID
     assessmentDate: new Date().toISOString().split("T")[0]
   },
   scores: {
@@ -568,6 +569,7 @@ function captureMetadata() {
   assessmentState.metadata.deviceModel = (document.getElementById("deviceModel")?.value || "").trim();
   assessmentState.metadata.packageName = (document.getElementById("packageName")?.value || "").trim();
   assessmentState.metadata.assessorName = (document.getElementById("assessorName")?.value || "").trim();
+  assessmentState.metadata.assessorId = (document.getElementById("assessorId")?.value || "").trim();
   assessmentState.metadata.assessmentDate = document.getElementById("assessmentDate")?.value || new Date().toISOString().split("T")[0];
 }
 
@@ -598,6 +600,7 @@ function migrateOldDraftIfNeeded() {
         deviceModel: oldDraft.metadata?.deviceModel || "Unspecified Model",
         packageName: oldDraft.metadata?.packageName || "",
         assessorName: oldDraft.metadata?.assessorName || "",
+        assessorId: oldDraft.metadata?.assessorId || "",
         lastSavedAt: oldDraft.timestamp || new Date().toISOString(),
         formattedTime: oldDraft.formattedTime || new Date().toLocaleString(),
         rubricVersion: oldDraft.metadata?.rubricVersion || "1.0",
@@ -691,6 +694,7 @@ function serializeDraft(draftId) {
   const company = assessmentState.metadata.companyName || "Untitled Company";
   const device = assessmentState.metadata.deviceModel || "Unspecified Model";
   const assessor = assessmentState.metadata.assessorName || "Unassigned Assessor";
+  const assessorId = assessmentState.metadata.assessorId || "";
 
   return {
     draftId,
@@ -698,6 +702,7 @@ function serializeDraft(draftId) {
     deviceModel: device,
     packageName: assessmentState.metadata.packageName || "",
     assessorName: assessor,
+    assessorId: assessorId,
     lastSavedAt: new Date().toISOString(),
     formattedTime: new Date().toLocaleString(),
     rubricVersion: assessmentState.rubricVersion || RUBRIC_VERSION,
@@ -902,6 +907,10 @@ function restoreDraft(draft) {
       const el = document.getElementById("assessorName");
       if (el) el.value = state.metadata.assessorName;
     }
+    if (state.metadata.assessorId !== undefined) {
+      const el = document.getElementById("assessorId");
+      if (el) el.value = state.metadata.assessorId;
+    }
     if (state.metadata.assessmentDate !== undefined) {
       const el = document.getElementById("assessmentDate");
       if (el) el.value = state.metadata.assessmentDate;
@@ -988,12 +997,14 @@ function startNewEvaluation() {
   const deviceEl = document.getElementById("deviceModel");
   const packageEl = document.getElementById("packageName");
   const assessorEl = document.getElementById("assessorName");
+  const assessorIdEl = document.getElementById("assessorId");
   const dateEl = document.getElementById("assessmentDate");
 
   if (companyEl) companyEl.value = "";
   if (deviceEl) deviceEl.value = "";
   if (packageEl) packageEl.value = "";
   if (assessorEl) assessorEl.value = "";
+  if (assessorIdEl) assessorIdEl.value = "";
   if (dateEl) dateEl.value = new Date().toISOString().split("T")[0];
 
   assessmentState.selectedItems = {};
@@ -1180,7 +1191,6 @@ function checkExistingDraft() {
   }
 }
 
-
 // ==========================================================================
 // 3c. Assessor Rejection Notice & Status Lookup Subsystem (Requirement 4)
 // Allows assessors to review their submissions and prominently view rejection reasons
@@ -1192,12 +1202,12 @@ function openLookupModal() {
   modal.classList.add("active");
   modal.setAttribute("aria-hidden", "false");
 
-  // Pre-fill with current Assessor Name/ID if present
-  const currentAssessor = (document.getElementById("assessorName")?.value || "").trim();
+  // Pre-fill with current Assessor ID if present
+  const currentAssessorId = (document.getElementById("assessorId")?.value || "").trim();
   const input = document.getElementById("lookup-assessor-input");
-  if (input && currentAssessor && !input.value) {
-    input.value = currentAssessor;
-    lookupAssessorSubmissions(currentAssessor);
+  if (input && currentAssessorId && !input.value) {
+    input.value = currentAssessorId;
+    lookupAssessorSubmissions(currentAssessorId);
   } else if (input && input.value) {
     lookupAssessorSubmissions(input.value);
   }
@@ -1333,6 +1343,7 @@ async function loadEvaluationForCorrection(recordId) {
     if (document.getElementById("deviceModel")) document.getElementById("deviceModel").value = doc.deviceModel || "";
     if (document.getElementById("packageName")) document.getElementById("packageName").value = doc.packageName || "";
     if (document.getElementById("assessorName")) document.getElementById("assessorName").value = doc.assessorName || "";
+    if (document.getElementById("assessorId")) document.getElementById("assessorId").value = doc.assessorId || "";
     if (document.getElementById("assessmentDate") && doc.assessmentDate) document.getElementById("assessmentDate").value = doc.assessmentDate;
     captureMetadata();
 
@@ -1497,7 +1508,7 @@ function generatePdfReport() {
           <tr>
             <td style="padding: 2.5px 5px; font-size: 8.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">Device Model:</td>
             <td style="padding: 2.5px 5px; font-size: 10.5px; font-weight: 700; color: #0F172A;">${escapeHtml(deviceModel)}</td>
-            <td style="padding: 2.5px 5px; font-size: 8.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">Assessor ID/Name:</td>
+            <td style="padding: 2.5px 5px; font-size: 8.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">Assessor Name:</td>
             <td style="padding: 2.5px 5px; font-size: 10.5px; font-weight: 700; color: #0F172A;">${escapeHtml(assessorName)}</td>
           </tr>
           <tr>
@@ -1645,9 +1656,6 @@ function generatePdfReport() {
 
     showToast("Assessment Report is now displayed on the page!");
   }
-
-  // 2. Automatically initiate the PDF file download
-  downloadReportPdf(false);
 }
 
 // Download the currently generated report as a PDF file
@@ -1665,17 +1673,26 @@ function downloadReportPdf(showMessage = true) {
   if (downloadText) downloadText.textContent = "Generating PDF...";
   if (statusBadge) statusBadge.textContent = "Compiling 1-page PDF document...";
 
+  const element = document.getElementById('report-document-wrapper'); 
+
   const opt = {
-    margin: [6, 8, 6, 8],
+    margin: [0.5, 0.5, 0.5, 0.5],
     filename: currentReportFilename || "TrackScore_Evaluation_Report.pdf",
     image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+    html2canvas: { 
+      scale: 2, 
+      useCORS: true, 
+      logging: false,
+      scrollY: 0,
+      windowHeight: element.scrollHeight
+    },
+    jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+    pagebreak: { mode: ['css', 'legacy'] }
   };
 
   if (window.html2pdf) {
     window.html2pdf()
-      .from(currentReportHtml)
+      .from(element)
       .set(opt)
       .save()
       .then(() => {
@@ -1748,11 +1765,11 @@ async function saveEvaluationToDatabase() {
   dismissFormAlert();
   captureMetadata();
 
-  const { companyName, deviceModel, packageName, assessorName } = assessmentState.metadata;
+  const { companyName, deviceModel, packageName, assessorName, assessorId } = assessmentState.metadata;
   const { sectionA, sectionB, total, starRating, starsCount, ratingLabel } = assessmentState.scores;
 
-  if (!companyName || !deviceModel || !assessorName) {
-    const errorMsg = "Please fill in Company Name, Device Model, and Assessor Name before saving.";
+  if (!companyName || !deviceModel || !assessorName || !assessorId) {
+    const errorMsg = "Please fill in Company Name, Device Model, Assessor Name, and Assessor ID before saving.";
     showFormAlert(errorMsg, "warning");
     showToast(errorMsg, true);
     document.getElementById("companyName")?.focus();
@@ -1795,6 +1812,7 @@ async function saveEvaluationToDatabase() {
     deviceModel,
     packageName: packageName || "Standard Package",
     assessorName,
+    assessorId,
     assessmentDate: assessmentState.metadata.assessmentDate,
     rubricVersion: assessmentState.rubricVersion || RUBRIC_VERSION,
     sectionAScore: sectionA,
@@ -1962,12 +1980,14 @@ function resetEvaluationForm() {
   const deviceEl = document.getElementById("deviceModel");
   const packageEl = document.getElementById("packageName");
   const assessorEl = document.getElementById("assessorName");
+  const assessorIdEl = document.getElementById("assessorId");
   const dateEl = document.getElementById("assessmentDate");
 
   if (companyEl) companyEl.value = "";
   if (deviceEl) deviceEl.value = "";
   if (packageEl) packageEl.value = "";
   if (assessorEl) assessorEl.value = "";
+  if (assessorIdEl) assessorIdEl.value = "";
   if (dateEl) dateEl.value = new Date().toISOString().split("T")[0];
 
   assessmentState.selectedItems = {};
@@ -1988,7 +2008,8 @@ function fillDemoData() {
   document.getElementById("companyName").value = "Vortex Telematics Malaysia Sdn Bhd";
   document.getElementById("deviceModel").value = "VT-900 GPS Telematics Hub";
   document.getElementById("packageName").value = "Commercial Fleet Gold Plus";
-  document.getElementById("assessorName").value = "Ir. Khairul Azhar (AS-9920)";
+  document.getElementById("assessorName").value = "Ir. Khairul Azhar";
+  document.getElementById("assessorId").value = "AS-9920";
 
   // Select some realistic high-score options
   const samplePicks = {
@@ -2070,7 +2091,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("evaluation-form")?.addEventListener("change", handleOptionChange);
 
     // Debounced autosave on metadata field inputs and changes
-    ["companyName", "deviceModel", "packageName", "assessorName", "assessmentDate"].forEach(fieldId => {
+    ["companyName", "deviceModel", "packageName", "assessorName", "assessorId", "assessmentDate"].forEach(fieldId => {
       const el = document.getElementById(fieldId);
       if (el) {
         el.addEventListener("input", debouncedAutosave);
