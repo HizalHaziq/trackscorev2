@@ -1,0 +1,1735 @@
+[
+  {
+    "_id": "eval_1788855438077_60p4n",
+    "rubricVersion": "1.0",
+    "companyName": "DuplicateCorp-1788855438076",
+    "deviceModel": "Tracker-X-1788855438076",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Lead Assessor Rizal",
+    "assessmentDate": "2026-03-20",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T08:17:18.076Z"
+  },
+  {
+    "_id": "eval_1788855438074_rzpod",
+    "rubricVersion": "1.0",
+    "companyName": "Test Fleet Corp 1788855436014",
+    "deviceModel": "TG-800-1788855436014",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Assessor-1788855436014",
+    "assessmentDate": "2026-03-15",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T08:17:18.073Z"
+  },
+  {
+    "_id": "eval_1788855091760_vn5rz",
+    "rubricVersion": "1.0",
+    "companyName": "DuplicateCorp-1788855091759",
+    "deviceModel": "Tracker-X-1788855091759",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Lead Assessor Rizal",
+    "assessmentDate": "2026-03-20",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T08:11:31.760Z"
+  },
+  {
+    "_id": "eval_1788855091757_807ma",
+    "rubricVersion": "1.0",
+    "companyName": "Test Fleet Corp 1788855089697",
+    "deviceModel": "TG-800-1788855089697",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Assessor-1788855089697",
+    "assessmentDate": "2026-03-15",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T08:11:31.756Z"
+  },
+  {
+    "_id": "eval_1788854440612_k6dhi",
+    "rubricVersion": "1.0",
+    "companyName": "DuplicateCorp-1788854440611",
+    "deviceModel": "Tracker-X-1788854440611",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Lead Assessor Rizal",
+    "assessmentDate": "2026-03-20",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T08:00:40.612Z"
+  },
+  {
+    "_id": "eval_1788854440609_ma7cb",
+    "rubricVersion": "1.0",
+    "companyName": "Test Fleet Corp 1788854438559",
+    "deviceModel": "TG-800-1788854438559",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Assessor-1788854438559",
+    "assessmentDate": "2026-03-15",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T08:00:40.609Z"
+  },
+  {
+    "_id": "eval_1788853984843_hqofu",
+    "rubricVersion": "1.0",
+    "companyName": "DuplicateCorp-1788853984842",
+    "deviceModel": "Tracker-X-1788853984842",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Lead Assessor Rizal",
+    "assessmentDate": "2026-03-20",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T07:53:04.843Z"
+  },
+  {
+    "_id": "eval_1788853984840_3w0f8",
+    "rubricVersion": "1.0",
+    "companyName": "Test Fleet Corp 1788853982789",
+    "deviceModel": "TG-800-1788853982789",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Assessor-1788853982789",
+    "assessmentDate": "2026-03-15",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T07:53:04.839Z"
+  },
+  {
+    "_id": "eval_1788853957653_u52di",
+    "rubricVersion": "1.0",
+    "companyName": "DuplicateCorp-1788853957653",
+    "deviceModel": "Tracker-X-1788853957653",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Lead Assessor Rizal",
+    "assessmentDate": "2026-03-20",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T07:52:37.653Z"
+  },
+  {
+    "_id": "eval_1788853957651_j1c7a",
+    "rubricVersion": "1.0",
+    "companyName": "Test Fleet Corp 1788853955596",
+    "deviceModel": "TG-800-1788853955596",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Assessor-1788853955596",
+    "assessmentDate": "2026-03-15",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T07:52:37.650Z"
+  },
+  {
+    "_id": "eval_1788853920272_ci15d",
+    "rubricVersion": "1.0",
+    "companyName": "DuplicateCorp-1788853920271",
+    "deviceModel": "Tracker-X-1788853920271",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Lead Assessor Rizal",
+    "assessmentDate": "2026-03-20",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T07:52:00.272Z"
+  },
+  {
+    "_id": "eval_1788853920269_tsdok",
+    "rubricVersion": "1.0",
+    "companyName": "Test Fleet Corp 1788853918207",
+    "deviceModel": "TG-800-1788853918207",
+    "packageName": "Premium Enterprise",
+    "assessorName": "Assessor-1788853918207",
+    "assessmentDate": "2026-03-15",
+    "sectionAScore": 3,
+    "sectionBScore": 0,
+    "totalScore": 3,
+    "starRating": 0.35,
+    "starsCount": 1,
+    "ratingLabel": "1 Star - Non-Compliant (MIROS Grade E)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": "3m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      }
+    ],
+    "evaluationHistory": [],
+    "createdAt": "2026-09-08T07:52:00.268Z"
+  },
+  {
+    "_id": "eval_1788853274385_k8d63",
+    "rubricVersion": "1.0",
+    "companyName": "Vortex Telematics Malaysia Sdn Bhd",
+    "deviceModel": "VT-900 GPS Telematics Hub21",
+    "packageName": "Commercial Fleet Gold Plus",
+    "assessorName": "Ir. Khairul Azhar (AS-9920)",
+    "assessmentDate": "2026-09-08",
+    "sectionAScore": 33,
+    "sectionBScore": 10,
+    "totalScore": 43,
+    "starRating": 5,
+    "starsCount": 5,
+    "ratingLabel": "5 Stars - Outstanding (MIROS Certified Grade A)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": ">1 year",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "map_source",
+        "name": "Map Source",
+        "selectedOption": "Open updated",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Polygon",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "geofence_alert",
+        "name": "Geofence Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "vehicle_status",
+        "name": "Vehicle Status",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "engine_status",
+        "name": "Engine ON/OFF",
+        "selectedOption": "Report",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "overspeed_detection",
+        "name": "Overspeed Detection",
+        "selectedOption": "Configurable",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "overspeed_alert",
+        "name": "Overspeed Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "offline_memory",
+        "name": "Offline Memory",
+        "selectedOption": ">60m",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "backup_battery",
+        "name": "Backup Battery",
+        "selectedOption": ">24h",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "sim_network",
+        "name": "SIM Network",
+        "selectedOption": "Roaming",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "connectivity",
+        "name": "Connectivity",
+        "selectedOption": "4G",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "multilingual",
+        "name": "Multilingual",
+        "selectedOption": "Other",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "user_manual",
+        "name": "User Manual",
+        "selectedOption": "Other",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "warranty",
+        "name": "Warranty",
+        "selectedOption": ">12m",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "customer_service",
+        "name": "Customer Service",
+        "selectedOption": "Control Centre",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "os_compatibility",
+        "name": "OS Compatibility",
+        "selectedOption": "Mobile",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "trip_report",
+        "name": "Trip Report",
+        "selectedOption": "Duration",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "data_interval",
+        "name": "Data Interval",
+        "selectedOption": "<30s",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_accel",
+        "name": "Harsh Acceleration",
+        "selectedOption": "Config",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_accel_alert",
+        "name": "Harsh Accel Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_braking",
+        "name": "Harsh Braking",
+        "selectedOption": "Config",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_braking_alert",
+        "name": "Harsh Braking Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "B",
+        "id": "tow_detection",
+        "name": "Tow Detection",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "panic_button",
+        "name": "Panic Button",
+        "selectedOption": "SMS",
+        "points": 1.25
+      },
+      {
+        "section": "B",
+        "id": "mfa",
+        "name": "MFA",
+        "selectedOption": "OTP",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "sop_tech_problems",
+        "name": "SOP Tech Problems",
+        "selectedOption": "3 days",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "service_records",
+        "name": "Service Records",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "driver_id",
+        "name": "Driver ID",
+        "selectedOption": "Report",
+        "points": 1.25
+      },
+      {
+        "section": "B",
+        "id": "certification",
+        "name": "Certification",
+        "selectedOption": "SIRIM/CE",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "immobilizer",
+        "name": "Immobilizer",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "tampered_alert",
+        "name": "Tamper Detection & Power Disconnect Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      }
+    ],
+    "createdAt": "2026-09-08T07:41:13.289Z"
+  },
+  {
+    "_id": "eval_1788852418507_8h9zr",
+    "rubricVersion": "1.0",
+    "companyName": "Vortex Telematics Malaysia Sdn Bhd",
+    "deviceModel": "VT-900 Rev B",
+    "packageName": "Commercial Fleet Gold Plus",
+    "assessorName": "Ir. Khairul Azhar (AS-9920)",
+    "assessmentDate": "2026-09-08",
+    "sectionAScore": 33,
+    "sectionBScore": 10,
+    "totalScore": 43,
+    "starRating": 5,
+    "starsCount": 5,
+    "ratingLabel": "5 Stars - Outstanding (MIROS Certified Grade A)",
+    "maxPossibleScore": 43,
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": ">1 year",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "map_source",
+        "name": "Map Source",
+        "selectedOption": "Open updated",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Polygon",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "geofence_alert",
+        "name": "Geofence Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "vehicle_status",
+        "name": "Vehicle Status",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "engine_status",
+        "name": "Engine ON/OFF",
+        "selectedOption": "Report",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "overspeed_detection",
+        "name": "Overspeed Detection",
+        "selectedOption": "Configurable",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "overspeed_alert",
+        "name": "Overspeed Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "offline_memory",
+        "name": "Offline Memory",
+        "selectedOption": ">60m",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "backup_battery",
+        "name": "Backup Battery",
+        "selectedOption": ">24h",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "sim_network",
+        "name": "SIM Network",
+        "selectedOption": "Roaming",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "connectivity",
+        "name": "Connectivity",
+        "selectedOption": "4G",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "multilingual",
+        "name": "Multilingual",
+        "selectedOption": "Other",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "user_manual",
+        "name": "User Manual",
+        "selectedOption": "Other",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "warranty",
+        "name": "Warranty",
+        "selectedOption": ">12m",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "customer_service",
+        "name": "Customer Service",
+        "selectedOption": "Control Centre",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "os_compatibility",
+        "name": "OS Compatibility",
+        "selectedOption": "Mobile",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "trip_report",
+        "name": "Trip Report",
+        "selectedOption": "Duration",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "data_interval",
+        "name": "Data Interval",
+        "selectedOption": "<30s",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_accel",
+        "name": "Harsh Acceleration",
+        "selectedOption": "Config",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_accel_alert",
+        "name": "Harsh Accel Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_braking",
+        "name": "Harsh Braking",
+        "selectedOption": "Config",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_braking_alert",
+        "name": "Harsh Braking Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "B",
+        "id": "tow_detection",
+        "name": "Tow Detection",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "panic_button",
+        "name": "Panic Button",
+        "selectedOption": "SMS",
+        "points": 1.25
+      },
+      {
+        "section": "B",
+        "id": "mfa",
+        "name": "MFA",
+        "selectedOption": "OTP",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "sop_tech_problems",
+        "name": "SOP Tech Problems",
+        "selectedOption": "3 days",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "service_records",
+        "name": "Service Records",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "driver_id",
+        "name": "Driver ID",
+        "selectedOption": "Report",
+        "points": 1.25
+      },
+      {
+        "section": "B",
+        "id": "certification",
+        "name": "Certification",
+        "selectedOption": "SIRIM/CE",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "immobilizer",
+        "name": "Immobilizer",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "tampered_alert",
+        "name": "Tamper Detection & Power Disconnect Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      }
+    ],
+    "createdAt": "2026-09-08T07:26:53.849Z"
+  },
+  {
+    "_id": "eval_1788843651570_2hh64",
+    "companyName": "Vortex Telematics Malaysia Sdn Bhd",
+    "deviceModel": "VT-900 GPS Telematics Hub",
+    "packageName": "Commercial Fleet Gold Plus",
+    "assessorName": "Ir. Khairul Azhar (AS-9920)",
+    "sectionAScore": 33,
+    "sectionBScore": 10,
+    "totalScore": 43,
+    "starRating": 5,
+    "starsCount": 5,
+    "ratingLabel": "5 Stars - Outstanding (MIROS Certified Grade A)",
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": ">1 year",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "map_source",
+        "name": "Map Source",
+        "selectedOption": "Open updated",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Polygon",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "geofence_alert",
+        "name": "Geofence Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "vehicle_status",
+        "name": "Vehicle Status",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "engine_status",
+        "name": "Engine ON/OFF",
+        "selectedOption": "Report",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "overspeed_detection",
+        "name": "Overspeed Detection",
+        "selectedOption": "Configurable",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "overspeed_alert",
+        "name": "Overspeed Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "offline_memory",
+        "name": "Offline Memory",
+        "selectedOption": ">60m",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "backup_battery",
+        "name": "Backup Battery",
+        "selectedOption": ">24h",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "sim_network",
+        "name": "SIM Network",
+        "selectedOption": "Roaming",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "connectivity",
+        "name": "Connectivity",
+        "selectedOption": "4G",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "multilingual",
+        "name": "Multilingual",
+        "selectedOption": "Other",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "user_manual",
+        "name": "User Manual",
+        "selectedOption": "Other",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "warranty",
+        "name": "Warranty",
+        "selectedOption": ">12m",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "customer_service",
+        "name": "Customer Service",
+        "selectedOption": "Control Centre",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "os_compatibility",
+        "name": "OS Compatibility",
+        "selectedOption": "Mobile",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "trip_report",
+        "name": "Trip Report",
+        "selectedOption": "Duration",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "data_interval",
+        "name": "Data Interval",
+        "selectedOption": "<30s",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_accel",
+        "name": "Harsh Acceleration",
+        "selectedOption": "Config",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_accel_alert",
+        "name": "Harsh Accel Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_braking",
+        "name": "Harsh Braking",
+        "selectedOption": "Config",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_braking_alert",
+        "name": "Harsh Braking Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "B",
+        "id": "tow_detection",
+        "name": "Tow Detection",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "panic_button",
+        "name": "Panic Button",
+        "selectedOption": "SMS",
+        "points": 1.25
+      },
+      {
+        "section": "B",
+        "id": "mfa",
+        "name": "MFA",
+        "selectedOption": "OTP",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "sop_tech_problems",
+        "name": "SOP Tech Problems",
+        "selectedOption": "3 days",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "service_records",
+        "name": "Service Records",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "driver_id",
+        "name": "Driver ID",
+        "selectedOption": "Report",
+        "points": 1.25
+      },
+      {
+        "section": "B",
+        "id": "certification",
+        "name": "Certification",
+        "selectedOption": "SIRIM/CE",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "immobilizer",
+        "name": "Immobilizer",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "tampered_alert",
+        "name": "Tampered Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      }
+    ],
+    "createdAt": "2026-09-08T05:00:46.432Z"
+  },
+  {
+    "_id": "seed-eval-001",
+    "companyName": "Apex Telematics Sdn Bhd",
+    "deviceModel": "FleetGuard Pro 400",
+    "packageName": "Enterprise Fleet Tracker",
+    "assessorName": "Ts. Mohd Farhan (AS-8812)",
+    "sectionAScore": 30.5,
+    "sectionBScore": 8.75,
+    "totalScore": 39.25,
+    "starRating": 4.56,
+    "starsCount": 5,
+    "ratingLabel": "5 Stars - Outstanding (MIROS Grade A)",
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": ">1 year",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "map_source",
+        "name": "Map Source",
+        "selectedOption": "Open updated",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Polygon",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "geofence_alert",
+        "name": "Geofence Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "vehicle_status",
+        "name": "Vehicle Status",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "engine_status",
+        "name": "Engine ON/OFF",
+        "selectedOption": "Report",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "overspeed_detection",
+        "name": "Overspeed Detection",
+        "selectedOption": "Configurable",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "overspeed_alert",
+        "name": "Overspeed Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "offline_memory",
+        "name": "Offline Memory",
+        "selectedOption": ">60m",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "backup_battery",
+        "name": "Backup Battery",
+        "selectedOption": ">24h",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "sim_network",
+        "name": "SIM Network",
+        "selectedOption": "Roaming",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "connectivity",
+        "name": "Connectivity",
+        "selectedOption": "4G",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "multilingual",
+        "name": "Multilingual",
+        "selectedOption": "Other",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "user_manual",
+        "name": "User Manual",
+        "selectedOption": "Other",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "warranty",
+        "name": "Warranty",
+        "selectedOption": ">12m",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "customer_service",
+        "name": "Customer Service",
+        "selectedOption": "Control Centre",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "os_compatibility",
+        "name": "OS Compatibility",
+        "selectedOption": "Mobile",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "trip_report",
+        "name": "Trip Report",
+        "selectedOption": "Duration",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "data_interval",
+        "name": "Data Interval",
+        "selectedOption": "<30s",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_accel",
+        "name": "Harsh Acceleration",
+        "selectedOption": "Config",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_accel_alert",
+        "name": "Harsh Accel Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_braking",
+        "name": "Harsh Braking",
+        "selectedOption": "Config",
+        "points": 1.5
+      },
+      {
+        "section": "A",
+        "id": "harsh_braking_alert",
+        "name": "Harsh Braking Alert",
+        "selectedOption": "Push",
+        "points": 1.5
+      },
+      {
+        "section": "B",
+        "id": "tow_detection",
+        "name": "Tow Detection",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "panic_button",
+        "name": "Panic Button",
+        "selectedOption": "SMS",
+        "points": 1.25
+      },
+      {
+        "section": "B",
+        "id": "mfa",
+        "name": "MFA",
+        "selectedOption": "OTP",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "sop_tech_problems",
+        "name": "SOP Tech Problems",
+        "selectedOption": "3 days",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "service_records",
+        "name": "Service Records",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "driver_id",
+        "name": "Driver ID",
+        "selectedOption": "Report",
+        "points": 1.25
+      },
+      {
+        "section": "B",
+        "id": "certification",
+        "name": "Certification",
+        "selectedOption": "SIRIM/CE",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "immobilizer",
+        "name": "Immobilizer",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "tampered_alert",
+        "name": "Tampered Alert",
+        "selectedOption": "SMS",
+        "points": 1.25
+      }
+    ],
+    "createdAt": "2026-09-06T04:56:17.982Z"
+  },
+  {
+    "_id": "seed-eval-002",
+    "companyName": "OmniTrack Mobility Solutions",
+    "deviceModel": "OT-Lite 200 GPS",
+    "packageName": "Basic Commercial Standard",
+    "assessorName": "Engr. Sarah Wong (AS-7741)",
+    "sectionAScore": 24.25,
+    "sectionBScore": 5.25,
+    "totalScore": 29.5,
+    "starRating": 3.43,
+    "starsCount": 3,
+    "ratingLabel": "3 Stars - Satisfactory (MIROS Grade C)",
+    "breakdown": [
+      {
+        "section": "A",
+        "id": "trip_history",
+        "name": "Trip History Data",
+        "selectedOption": ">3m-1y",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "realtime_tracking",
+        "name": "Real-time Tracking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "map_source",
+        "name": "Map Source",
+        "selectedOption": "Open",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "geofence",
+        "name": "Geofence",
+        "selectedOption": "Radius",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "geofence_alert",
+        "name": "Geofence Alert",
+        "selectedOption": "System",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "vehicle_status",
+        "name": "Vehicle Status",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "engine_status",
+        "name": "Engine ON/OFF",
+        "selectedOption": "System",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "overspeed_detection",
+        "name": "Overspeed Detection",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "overspeed_alert",
+        "name": "Overspeed Alert",
+        "selectedOption": "System",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "offline_memory",
+        "name": "Offline Memory",
+        "selectedOption": "15-60m",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "backup_battery",
+        "name": "Backup Battery",
+        "selectedOption": "1-24h",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "sim_network",
+        "name": "SIM Network",
+        "selectedOption": "4G fallback",
+        "points": 1.25
+      },
+      {
+        "section": "A",
+        "id": "connectivity",
+        "name": "Connectivity",
+        "selectedOption": "4G",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "multilingual",
+        "name": "Multilingual",
+        "selectedOption": "English",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "user_manual",
+        "name": "User Manual",
+        "selectedOption": "English",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "warranty",
+        "name": "Warranty",
+        "selectedOption": "12m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "customer_service",
+        "name": "Customer Service",
+        "selectedOption": "09-19",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "os_compatibility",
+        "name": "OS Compatibility",
+        "selectedOption": "Web",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "trip_report",
+        "name": "Trip Report",
+        "selectedOption": "Coords",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "data_interval",
+        "name": "Data Interval",
+        "selectedOption": "1m",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "harsh_accel",
+        "name": "Harsh Acceleration",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "harsh_accel_alert",
+        "name": "Harsh Accel Alert",
+        "selectedOption": "System",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "harsh_braking",
+        "name": "Harsh Braking",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "A",
+        "id": "harsh_braking_alert",
+        "name": "Harsh Braking Alert",
+        "selectedOption": "System",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "tow_detection",
+        "name": "Tow Detection",
+        "selectedOption": "None (0)",
+        "points": 0
+      },
+      {
+        "section": "B",
+        "id": "panic_button",
+        "name": "Panic Button",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "mfa",
+        "name": "MFA",
+        "selectedOption": "OTP",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "sop_tech_problems",
+        "name": "SOP Tech Problems",
+        "selectedOption": "3 days",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "service_records",
+        "name": "Service Records",
+        "selectedOption": "Available",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "driver_id",
+        "name": "Driver ID",
+        "selectedOption": "None (0)",
+        "points": 0
+      },
+      {
+        "section": "B",
+        "id": "certification",
+        "name": "Certification",
+        "selectedOption": "SIRIM/CE",
+        "points": 1
+      },
+      {
+        "section": "B",
+        "id": "immobilizer",
+        "name": "Immobilizer",
+        "selectedOption": "None (0)",
+        "points": 0
+      },
+      {
+        "section": "B",
+        "id": "tampered_alert",
+        "name": "Tampered Alert",
+        "selectedOption": "None (0)",
+        "points": 0
+      }
+    ],
+    "createdAt": "2026-09-03T04:56:17.982Z"
+  }
+]
